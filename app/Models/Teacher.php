@@ -8,4 +8,42 @@ use Illuminate\Database\Eloquent\Model;
 class Teacher extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'school_id',
+        'school_class_division_id',
+        'phone',
+        'gender',
+        'email',
+        'password',
+        'name'
+    ];
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
+    }
+
+
+    public function division()
+    {
+        return $this->belongsTo(SchoolsClassesDivision::class, 'division_id');
+    }
+
+    public function homeworks()
+    {
+        return $this->hasMany(Homework::class);
+    }
+
+    // public function posts()
+    // {
+    //     return $this->hasMany(Post::class);
+    // }
+
+
+
+    public function contests()
+    {
+        return $this->hasMany(Contest::class);
+    }
 }
