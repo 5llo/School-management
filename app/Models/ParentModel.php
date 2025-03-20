@@ -17,11 +17,26 @@ class ParentModel extends Model
         'email',
         'password',
         'location',
-        'phone',
+        'phone'
     ];
 
-    // Optionally, you can add hidden fields (like password) for security
-    protected $hidden = [
-        'password',
-    ];
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'parent_id');
+    }
+
+    public function conversations()
+    {
+        return $this->morphMany(ConversationParticipant::class, 'user');
+    }
+
+    public function messages()
+    {
+        return $this->morphMany(Message::class, 'sender');
+    }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
 }

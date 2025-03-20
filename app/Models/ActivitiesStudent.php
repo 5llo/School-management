@@ -8,4 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class ActivitiesStudent extends Model
 {
     use HasFactory;
+    protected $table = 'activities_students';
+
+    protected $fillable = [
+        'activity_id',
+        'student_id',
+        'attendance',
+        'evaluation',
+        'notes'
+    ];
+
+    public function activity()
+    {
+        return $this->belongsTo(Activity::class);
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 }

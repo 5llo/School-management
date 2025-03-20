@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Division extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'exam_schedule',
+        'week_schedule'
+    ];
+
+    public function schoolsClassesDivisions()
+    {
+        return $this->hasMany(SchoolsClassesDivision::class);
+    }
 }
