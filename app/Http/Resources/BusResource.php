@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class BusResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request)
+    {
+        return [
+           // 'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'school_id' => $this->school->name,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'bus_number' => $this->bus_number,
+            'bus_capacity' => $this->bus_capacity,
+            'number_of_students' => $this->students()->count(),
+        ];
+    }
+}

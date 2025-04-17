@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class SchoolsClassesDivision extends Model
 {
     use HasFactory;
+    protected $table = 'schools_classes_division';
 
     protected $fillable = [
         'school_class_id',
         'division_id',
-        'name'
+        'exam_schedule',
+        'week_schedule'
     ];
 
     public function class()
@@ -22,7 +24,7 @@ class SchoolsClassesDivision extends Model
 
     public function division()
     {
-        return $this->belongsTo(Division::class);
+        return $this->belongsTo(Division::class,'division_id');
     }
 
     public function teachers()
@@ -32,7 +34,7 @@ class SchoolsClassesDivision extends Model
 
     public function students()
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class,'school_class_division_id');
     }
 
     public function activities()

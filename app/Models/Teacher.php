@@ -11,7 +11,7 @@ class Teacher extends Model
 
     protected $fillable = [
         'school_id',
-        'school_class_division_id',
+        'schools_classes_division_id',
         'phone',
         'gender',
         'email',
@@ -27,7 +27,7 @@ class Teacher extends Model
 
     public function division()
     {
-        return $this->belongsTo(SchoolsClassesDivision::class, 'division_id');
+        return $this->belongsTo(SchoolsClassesDivision::class, 'schools_classes_division_id');
     }
 
     public function homeworks()

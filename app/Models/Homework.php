@@ -10,11 +10,10 @@ class Homework extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
+        'teacher_id',
         'description',
-        'delivery_date',
-        'school_class_division_id',
-        'teacher_id'
+        'file',
+        
     ];
 
     public function schoolClassDivision()

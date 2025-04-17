@@ -3,16 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\SchoolsClass;
+use App\Http\Resources\SchoolClassResource;
 use Illuminate\Http\Request;
+use App\Traits\GeneralTrait;
+
 
 class SchoolsClassController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    use GeneralTrait;
+
+    public function index($id)
     {
-        //
+        try{
+        $SchoolsClass = SchoolsClass::with('school')->where('school_id', $id)->get();
+        return $this->successResponse(SchoolClassResource::collection($SchoolsClass));
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+
     }
 
     /**
