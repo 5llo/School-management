@@ -146,7 +146,7 @@ class ActivityController extends Controller
             'time' => $activity->time,
             'start' => $activity->start,
             'phone' => $activity->phone,
-            'status' => 'active', // إضافة كلمة "active" كجزء من البيانات
+            'status' => 'active',
         ];
 
         $activities[] = $activity;

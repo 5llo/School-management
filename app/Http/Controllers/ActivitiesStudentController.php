@@ -109,11 +109,37 @@ class ActivitiesStudentController extends Controller
         }
     }
 
-    public function getActiveRecords()
+    // public function getActiveRecords()
+    // {
+    //     try {
+    //         $activeRecords = ActivitiesStudent::where('status', 'active')->get();
+    //         return $this->successResponse(ActivityStudentResource::collection($activeRecords));
+    //     } catch (\Exception $ex) {
+    //         return $this->errorResponse($ex->getMessage(), 500);
+    //     }
+    // }
+
+
+    public function acceptOrRejectRequest($recordId, $action)
     {
         try {
-            $activeRecords = ActivitiesStudent::where('status', 'active')->get();
-            return $this->successResponse(ActivityStudentResource::collection($activeRecords));
+            $record = ActivitiesStudent::find($recordId);
+
+            if (!$record) {
+                return response()->json(['message' => 'Record not found'], 404);
+            }
+
+            if ($action === '0') {
+                $record->status = 'active';
+            } elseif ($action === '1') {
+                $record->status = 'inactive';
+            } else {
+                return response()->json(['message' => 'Invalid action'], 400);
+            }
+
+            $record->save();
+
+            return $this->successResponse(new ActivityStudentResource($record));
         } catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }

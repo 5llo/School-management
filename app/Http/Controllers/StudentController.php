@@ -115,7 +115,7 @@ class StudentController extends Controller
         try{
         $validator = Validator::make($request->all(),[
             'parent_id' => 'required|exists:parents,id',
-           'bus_driver_id' => 'required|exists:bus_drivers,id',
+           'bus_driver_id' => 'nullable|exists:bus_drivers,id',
             'school_class_division_id' => 'required|exists:schools_classes_division,id',
             'name' => 'required',
         ]);

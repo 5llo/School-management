@@ -243,7 +243,8 @@ Route::prefix('activities-student')->group(function () {
     Route::get('/{id}', [ActivitiesStudentController::class, 'show']);
     Route::get('/showStudentsForActivity/{activityId}', [ActivitiesStudentController::class, 'showStudentsForActivity']);
     Route::get('getSuspendedRecords/{id}', [ActivitiesStudentController::class, 'getSuspendedRecords']);
-    Route::get('getActiveRecords/{id}', [ActivitiesStudentController::class, 'getActiveRecords']);
+    Route::get('acceptOrRejectRequest/{recordId}/{action}', [ActivitiesStudentController::class, 'acceptOrRejectRequest']);
+   // Route::get('getActiveRecords/{id}', [ActivitiesStudentController::class, 'getActiveRecords']);
 
 
 

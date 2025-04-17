@@ -14,6 +14,7 @@ class ActivityResource extends JsonResource
      */
     public function toArray(Request $request)
     {
+        $status = $this->date < now() ? 'منتهية' : 'نشطة';
         return [
             'name' => $this->name,
             //'description' => $this->description,
@@ -22,6 +23,7 @@ class ActivityResource extends JsonResource
             'time' => $this->time,
             'start' => $this->start,
             'phone' => $this->phone,
+            'status' => $status,
         ];
     }
 }
