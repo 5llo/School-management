@@ -28,10 +28,10 @@ class BusDriverController extends Controller
      }
  
 
-     public function getBusDriverBySchoolAndId($schoolId, $driverId)
+     public function getBusDriverBySchoolAndId($driverId)
      {
         try{
-         $busDriver = BusDriver::where('school_id', $schoolId)->where('id', $driverId)->first();
+         $busDriver = BusDriver::where('id', $driverId)->first();
  
          if (!$busDriver) {
              return response()->json(['message' => 'Bus driver not found for the specified school'], 404);
@@ -45,6 +45,25 @@ class BusDriverController extends Controller
      }
      }
      
+
+     public function getDriverStudents($driverId)
+    {
+        try{
+        $busDriver = BusDriver::find($driverId);
+
+        if (!$busDriver) {
+            return response()->json(['message' => 'Bus driver not found'], 404);
+        }
+
+        $driverStudents = $busDriver->students;
+
+        return $this->successResponse($driverStudents);
+    }
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
+
 
     public function index()
     {

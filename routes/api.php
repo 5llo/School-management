@@ -155,7 +155,8 @@ Route::prefix('students')->group(function () {
 //bus
 Route::prefix('buses')->group(function () {
     Route::get('/{schoolId}', [BusDriverController::class, 'getBusDriversBySchool']);
-    Route::get('/show/{schoolId}/{driverId}', [BusDriverController::class, 'getBusDriverBySchoolAndId']);
+    Route::get('/show/{driverId}', [BusDriverController::class, 'getBusDriverBySchoolAndId']);
+    Route::get('/getDriverStudents/{driverId}', [BusDriverController::class, 'getDriverStudents']);
     Route::post('/store', [BusDriverController::class, 'store']);
 
     });
