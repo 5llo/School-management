@@ -15,5 +15,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    //rgeteturn $request->user();
+});
+Route::post('/Busdriver/login',[\App\Http\Controllers\Auth\AuthBusdriverController::class,'login']);
+Route::post('/Teacher/login',[\App\Http\Controllers\Auth\AuthTeacherController::class,'login']);
+Route::get('/test',function(){
+    return "hello from the website  :)";
+});
+Route::middleware('auth:sanctum')->group(function(){
+    Route::get('Busdriver/logout',[\App\Http\Controllers\Auth\AuthBusdriverController::class,'logout']);
+});
+Route::middleware('auth:sanctum')->group(function(){
+    Route::get('Teacher/logout',[\App\Http\Controllers\Auth\AuthTeacherController::class,'logout']);
 });
