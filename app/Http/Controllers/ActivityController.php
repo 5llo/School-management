@@ -133,29 +133,11 @@ class ActivityController extends Controller
 
     public function getActiveActivities()
 {
-    try{
-        $activeActivities = Activity::whereDate('start', '>=', now()->toDateString())->get();
-    
-    $activities = [];
-
-    foreach ($activeActivities as $activity) {
-        $activity = [
-            'name' => $activity->name,
-            'price' => $activity->price,
-            'date' => $activity->date,
-            'time' => $activity->time,
-            'start' => $activity->start,
-            'phone' => $activity->phone,
-            'status' => 'active',
-        ];
-
-        $activities[] = $activity;
+ try {
+        $activeActivities = Activity::where('date', '>', now())->get();
+        return $this->successResponse(ActivityResource::collection($activeActivities));
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+            }
     }
-
-    return $this->successResponse($activities);
-} catch (\Exception $ex) {
-    return $this->errorResponse($ex->getMessage(), 500);
-}
-
-}
 }
