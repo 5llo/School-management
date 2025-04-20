@@ -18,7 +18,7 @@ class School extends Model
         'password',
         'location'
     ];
-
+    public $timestamps = false;
     public function teachers()
     {
         return $this->hasMany(Teacher::class);

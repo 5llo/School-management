@@ -4,17 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use Illuminate\Http\Request;
-
+use App\Traits\GeneralTrait;
+use App\Http\Resources\ActivityResource;
+use Illuminate\Support\Facades\Validator;
 class ActivityController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    use GeneralTrait;
+
     public function index()
     {
-        //
+        try{
+        $activity = Activity::all();
+        return $this->successResponse(ActivityResource::collection($activity));
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
     }
 
+
+    public function searchActivityByName(Request $request)
+{
+    try{
+    $name = $request->input('name');
+    
+    $activity = Activity::where('name', 'like', '%'.$name.'%')->first();
+
+    if($activity) {
+        $activityName= new ActivityResource($activity);
+        return $this->successResponse($activityName);
+     }
+    //  else {
+    //     return response()->json(['message' => 'Activity not found']);
+    // }    
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+     }
+  }
     /**
      * Show the form for creating a new resource.
      */
@@ -28,15 +56,43 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'price' => 'required|numeric|min:0',
+            'date' => 'required|date',
+            'time' => 'required',
+            'start' => 'required',
+            'phone' => 'required|string',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation Error',
+                    'errors' => $validator->errors()
+                ], 422); 
+            }  
+             $data = $request->all();
+             $activity = Activity::create($data);
+            return $this->successResponse($activity, 'created successfull.');
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Activity $activity)
+    public function show(Activity $activity,$id)
     {
-        //
+        try{
+        $activity = Activity::findOrFail($id);
+        $activityData= new ActivityResource($activity);
+        return $this->successResponse($activityData);
+
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
     }
 
     /**
@@ -58,8 +114,30 @@ class ActivityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Activity $activity)
+    public function destroy(Activity $activity,$id)
     {
-        //
+        try {
+            $activityData = Activity::find($id);
+           
+            if (!$activityData) {
+                return $this->successResponse(['message' => 'Activity not found']);
+            }
+           // dd($activityData);
+            $activityData->delete();
+            return $this->successResponse(['message' => 'Activity deleted']);
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
+
+
+    public function getActiveActivities()
+{
+ try {
+        $activeActivities = Activity::where('date', '>', now())->get();
+        return $this->successResponse(ActivityResource::collection($activeActivities));
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+            }
     }
 }

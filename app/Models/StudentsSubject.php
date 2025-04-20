@@ -20,7 +20,7 @@ class StudentsSubject extends Model
         'homework_grade',
         'exam_grade'
     ];
-
+    public $timestamps = false;
     protected $casts = [
         'attendance_array' => 'array'
     ];

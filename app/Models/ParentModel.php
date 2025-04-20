@@ -16,7 +16,8 @@ class ParentModel extends Model
         'name',
         'email',
         'password',
-        'location',
+        'latitude',
+        'longitude',
         'phone'
     ];
 

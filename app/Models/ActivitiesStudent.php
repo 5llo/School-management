@@ -13,9 +13,8 @@ class ActivitiesStudent extends Model
     protected $fillable = [
         'activity_id',
         'student_id',
-        'attendance',
-        'evaluation',
-        'notes'
+        'process_number',
+        'status',
     ];
 
     public function activity()

@@ -4,15 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
-
+use App\Traits\GeneralTrait;
+use Illuminate\Support\Facades\Validator;
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    use GeneralTrait;
+
     public function index()
     {
-        //
+        try{
+        $posts = Post::with('images', 'comments')->get();
+        return $this->successResponse($posts);
+    } 
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+
     }
 
     /**
@@ -28,7 +38,23 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validator = Validator::make($request->all(), [
+                'description' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation Error',
+                    'errors' => $validator->errors()
+                ], 422); 
+            }  
+             $data = $request->all();
+            $posts = Post::create($data);
+            return $this->successResponse($posts, 'created successfull.');
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
     }
 
     /**

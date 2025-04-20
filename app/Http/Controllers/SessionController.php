@@ -4,15 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\Traits\GeneralTrait;
+
 
 class SessionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    use GeneralTrait;
+
     public function index()
     {
-        //
+        try{
+        $sessions = Session::with('academicYear')->get();
+        return $this->successResponse($sessions, 'successfull.');
+    } 
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+    
+
     }
 
     /**
@@ -28,7 +41,29 @@ class SessionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+        $validator = Validator::make($request->all(), [
+            'academic_year_id' => 'required',
+            'name' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422); 
+        }  
+         $data = $request->all();
+        $session = Session::create($data);
+        return $this->successResponse($session, 'created successfull.');
+    } 
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+    
+    
     }
 
     /**

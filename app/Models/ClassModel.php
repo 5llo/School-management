@@ -11,7 +11,7 @@ class ClassModel extends Model
     protected $table = 'classes';
 
     protected $fillable = [
-        'school_id',
+
         'name'
     ];
 
@@ -23,5 +23,10 @@ class ClassModel extends Model
     public function schoolsClassesDivisions()
     {
         return $this->hasMany(SchoolsClassesDivision::class);
+    }
+
+    public function classes()
+    {
+        return $this->hasMany(SchoolsClass::class);
     }
 }

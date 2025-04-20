@@ -4,16 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Homework;
 use Illuminate\Http\Request;
+use App\Models\Teacher;
+use App\Models\SchoolsClassesDivision;
+use Illuminate\Support\Facades\Validator;
+use App\Traits\GeneralTrait;
 
 class HomeworkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+    use GeneralTrait;
+
+
+     public function index($teacherId)
+     {
+        try{
+         $homeworks = Homework::where('teacher_id', $teacherId)->get();
+         return $this->successResponse($homeworks);
+        } 
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+
+     }
 
     /**
      * Show the form for creating a new resource.
@@ -28,12 +42,57 @@ class HomeworkController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+        $validator = Validator::make($request->all(), [
+           'teacher_id' => 'required|exists:teachers,id',
+            'description' => 'required',
+            'file' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+        $data = $request->all();
+        $homework = Homework::create($data);
+        return $this->successResponse($homework);
+    } 
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+
     }
 
     /**
      * Display the specified resource.
      */
+
+     
+     public function getHomeWorkWForDivision($divisionId)
+{
+    try {
+        
+        $division = SchoolsClassesDivision::findOrFail($divisionId);
+
+        $jobs = $division->teachers->flatMap(function ($teacher) {
+            return $teacher->homeworks->map(function ($job) use ($teacher) {
+                return [
+                    'teacher' => $teacher->name,
+                    'description' => $job->description, 
+                    'file' => $job->file,
+                ];
+            });
+        })->all();
+       
+      return $this->successResponse($jobs);
+
+    }
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    
+}
     public function show(Homework $homework)
     {
         //
