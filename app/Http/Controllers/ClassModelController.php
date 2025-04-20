@@ -4,15 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
 use Illuminate\Http\Request;
+use App\Traits\GeneralTrait;
 
 class ClassModelController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    use GeneralTrait;
+
     public function index()
     {
-        //
+        try{
+        $ClassModel = ClassModel::all();
+        return $this->successResponse($ClassModel);
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
     }
 
     /**

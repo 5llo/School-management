@@ -29,4 +29,9 @@ class Contest extends Model
         return $this->belongsToMany(Student::class, 'contests_students');
     }
 
+    public function questions()
+    {
+        return $this->hasMany(Question::class);
+    }
+
 }

@@ -12,10 +12,13 @@ class BusDriver extends Model
 
     protected $fillable = [
         'school_id',
-        'driver_id',
-        'plate_number',
-        'capacity',
-        'route_description'
+        'name',
+        'email',
+        'password',
+        'latitude',
+        'longitude',
+        'bus_number',
+        'bus_capacity',
     ];
 
     public function school()
@@ -30,6 +33,11 @@ class BusDriver extends Model
 
     public function students()
     {
-        return $this->hasMany(Student::class, 'bus_id');
+        return $this->hasMany(Student::class, 'bus_driver_id');
     }
+
+    // public function getNumberOfStudents()
+    // {
+    //     return $this->students()->count();
+    // }
 }

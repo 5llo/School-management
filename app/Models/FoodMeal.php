@@ -12,9 +12,9 @@ class FoodMeal extends Model
     protected $fillable = [
         'school_id',
         'name',
-        'description',
+        'contents',
         'price',
-        'day'
+        'entrees',
     ];
 
     public function school()
@@ -24,6 +24,6 @@ class FoodMeal extends Model
 
     public function students()
     {
-        return $this->belongsToMany(Student::class, 'students_schools_food_meals');
+        return $this->belongsToMany(Student::class,  'students_food_meals', 'food_meal_id', 'student_id');
     }
 }

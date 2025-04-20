@@ -10,8 +10,7 @@ class Division extends Model
     use HasFactory;
     protected $fillable = [
         'name',
-        'exam_schedule',
-        'week_schedule'
+       
     ];
 
     public function schoolsClassesDivisions()

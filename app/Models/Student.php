@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory;
+    Protected $table ="students";
     protected $fillable = [
         'parent_id',
-        'bus_id',
+        'bus_driver_id',
         'school_class_division_id',
         'name'
     ];
@@ -32,7 +33,7 @@ class Student extends Model
 
     public function busDriver()
     {
-        return $this->belongsTo(BusDriver::class, 'bus_id');
+        return $this->belongsTo(BusDriver::class, 'bus_driver_id');
     }
 
     public function schoolsFoodMeals()

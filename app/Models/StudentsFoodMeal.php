@@ -12,7 +12,9 @@ class StudentsFoodMeal extends Model
     protected $fillable = [
         'student_id',
         'food_meal_id',
-        'date'
+        'status',
+        'process_number',
+        'notes'
     ];
 
     public function student()
