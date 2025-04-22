@@ -21,7 +21,7 @@ class BusResource extends JsonResource
             'school_id' => $this->school->name,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
-            'bus_number' => $this->bus_number,
+            'phone' => $this->phone,
             'bus_capacity' => $this->bus_capacity,
             'number_of_students' => $this->students()->count(),
         ];

@@ -20,7 +20,7 @@ class SchoolsClassesDivisionPostController extends Controller
     {
         try{
             $schoolsClassesDivisionPosts = SchoolsClassesDivisionPost::with('post', 'schoolClassesDivision')->get();
-            return $this->successResponse(['data' => PostResource::collection($schoolsClassesDivisionPosts)]);
+            return $this->successResponse( PostResource::collection($schoolsClassesDivisionPosts));
         } 
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
@@ -72,10 +72,10 @@ class SchoolsClassesDivisionPostController extends Controller
                 return $this->successResponse(['message' => 'No posts found for this school classes division']);
             }
     
-            return $this->successResponse(['data' => PostResource::collection($schoolsClassesDivisionPosts)]);
+            return $this->successResponse( PostResource::collection($schoolsClassesDivisionPosts));
         
     
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
 

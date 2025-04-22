@@ -27,6 +27,8 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivitiesStudentController;
 use App\Http\Controllers\SchoolsClassesDivisionActivityController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\Auth\Authentication;
+
 
 
 
@@ -57,17 +59,16 @@ use App\Http\Controllers\ConversationController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     //rgeteturn $request->user();
 });
-Route::post('/Busdriver/login',[\App\Http\Controllers\Auth\AuthBusdriverController::class,'login']);
-Route::post('/Teacher/login',[\App\Http\Controllers\Auth\AuthTeacherController::class,'login']);
-Route::get('/test',function(){
-    return "hello from the website  :)";
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/getDriverStudents', [BusDriverController::class, 'getDriverStudents']);
+    Route::get('/getBusDriverinfo', [BusDriverController::class, 'getBusDriverinfo']);
+
 });
-Route::middleware('auth:sanctum')->group(function(){
-    Route::get('Busdriver/logout',[\App\Http\Controllers\Auth\AuthBusdriverController::class,'logout']);
-});
-Route::middleware('auth:sanctum')->group(function(){
-    Route::get('Teacher/logout',[\App\Http\Controllers\Auth\AuthTeacherController::class,'logout']);
-});
+
+Route::post('/login', [Authentication::class, 'login']); 
 
 //school
 Route::prefix('schools')->group(function () {
@@ -167,7 +168,6 @@ Route::prefix('students')->group(function () {
 Route::prefix('buses')->group(function () {
     Route::get('/{schoolId}', [BusDriverController::class, 'getBusDriversBySchool']);
     Route::get('/show/{driverId}', [BusDriverController::class, 'getBusDriverBySchoolAndId']);
-    Route::get('/getDriverStudents/{driverId}', [BusDriverController::class, 'getDriverStudents']);
     Route::post('/store', [BusDriverController::class, 'store']);
 
     });

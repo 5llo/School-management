@@ -117,28 +117,28 @@ class SchoolController extends Controller
     }
 
     
-//    public function countDivisionsPerClassInSchool($schoolId)
-// {
-//     try{
-//     $school = School::find($schoolId);
+   public function countDivisionsPerClassInSchool($schoolId)
+{
+    try{
+    $school = School::find($schoolId);
 
-//     if (!$school) {
-//         return "School not found";
-//     }
+    if (!$school) {
+        return "School not found";
+    }
 
-//     $classes = $school->classes()->with('divisions')->get();
-//     dd($classes);
-//     $divisionsCount = [];
+    $classes = $school->classes()->with('divisions')->get();
+    dd($classes);
+    $divisionsCount = [];
 
-//     foreach ($classes as $class) {
-//         $divisionsCount[$school->classe->classsModel->name] = $class->schoolsClassesDivisions->count();
-//     }
-//     return $this->successResponse($divisionsCount);
-// }
-//     catch (\Exception $ex) {
-//         return $this->errorResponse($ex->getMessage(), 500);
-//     }
-// }
+    foreach ($classes as $class) {
+        $divisionsCount[$school->classe->classsModel->name] = $class->schoolsClassesDivisions->count();
+    }
+    return $this->successResponse($divisionsCount);
+}
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+}
     /**
      * Show the form for editing the specified resource.
      */
