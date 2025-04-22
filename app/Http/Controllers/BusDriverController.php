@@ -7,6 +7,7 @@ use App\Http\Resources\BusResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
+use Illuminate\Support\Facades\Auth;
 
 class BusDriverController extends Controller
 {
@@ -28,36 +29,59 @@ class BusDriverController extends Controller
      }
  
 
-     public function getBusDriverBySchoolAndId($driverId)
+     public function getBusDriverinfo()
      {
-        try{
-         $busDriver = BusDriver::where('id', $driverId)->first();
+    //     try{
+    //      $busDriver = BusDriver::where('id', $driverId)->first();
  
+    //      if (!$busDriver) {
+    //          return response()->json(['message' => 'Bus driver not found for the specified school'], 404);
+    //      }
+ 
+    //      $bus= new BusResource($busDriver);
+    //      return $this->successResponse($bus);
+    //  } 
+    try {
+       
+        $busDriver = Auth::user();
          if (!$busDriver) {
-             return response()->json(['message' => 'Bus driver not found for the specified school'], 404);
+             return $this->successResponse(['message' => 'Bus driver not found'], 404);
          }
- 
-         $bus= new BusResource($busDriver);
-         return $this->successResponse($bus);
-     } 
+         return $this->successResponse(new BusResource($busDriver));
+
+        }
      catch (\Exception $ex) {
          return $this->errorResponse($ex->getMessage(), 500);
      }
      }
      
 
-     public function getDriverStudents($driverId)
+     public function getDriverStudents(Request $request)
     {
-        try{
-        $busDriver = BusDriver::find($driverId);
-
+       //return $request->user();
+       try {
+       
+       $busDriver = Auth::user();
         if (!$busDriver) {
-            return response()->json(['message' => 'Bus driver not found'], 404);
+            return $this->successResponse(['message' => 'Bus driver not found'], 404);
         }
 
-        $driverStudents = $busDriver->students;
+        $driverStudents = $busDriver->students->load('parent');  
 
-        return $this->successResponse($driverStudents);
+        $response = [];
+        foreach ($driverStudents as $student) {
+            $parent = $student->parent;
+            if ($parent) {
+                $response[] = [
+                    'student_name' => $student->name,
+                    'parent_phone' => $parent->phone,
+                    'latitude' => $parent->latitude,
+                    'longitude' => $parent->longitude,
+                ];
+            }
+        }
+    
+            return $this->successResponse($response);
     }
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
@@ -120,7 +144,7 @@ class BusDriverController extends Controller
      */
     public function show(BusDriver $busDriver)
     {
-        return new BusResource($bus->load(['school', 'driver', 'students']));
+        return new BusResource($busDriver->load(['school', 'driver', 'students']));
     }
 
     /**
@@ -163,8 +187,8 @@ class BusDriverController extends Controller
             }
      
                 $data = $request->all();
-                $teacher->update($data);
-                return $this->successResponse($teacher, 'update successfull.');
+                $BusDriver->update($data);
+                return $this->successResponse($BusDriver, 'update successfull.');
             } catch (\Exception $ex) {
                 return $this->errorResponse($ex->getMessage(), 500);
             }
