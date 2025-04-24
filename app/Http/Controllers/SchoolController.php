@@ -19,7 +19,7 @@ class SchoolController extends Controller
     public function index()
     {
         try{
-        $schools = School::all();
+       $schools = School::all();
         return $this->successResponse(SchoolResource::collection($schools));
     }
         catch (\Exception $ex) {
