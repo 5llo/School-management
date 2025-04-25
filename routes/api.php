@@ -62,13 +62,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getDriverStudents', [BusDriverController::class, 'getDriverStudents']);
     Route::get('/getBusDriverinfo', [BusDriverController::class, 'getBusDriverinfo']);
+    Route::get('/getWeek_Schedule', [SchoolsClassesDivisionController::class, 'getWeek_Schedule']);
+    Route::get('/showInfoTeacher', [TeacherController::class, 'show']);
+    Route::get('/showAllTeacherForSchool', [TeacherController::class, 'index']); //mahmoud
 
 });
 
 Route::post('/login', [Authentication::class, 'login']); 
+Route::post('/register', [Authentication::class, 'register']); 
+
+
+
 
 //school
 Route::prefix('schools')->group(function () {
@@ -108,7 +116,7 @@ Route::prefix('teachers')->group(function () {
     Route::get('/{schoolId}', [TeacherController::class, 'index']);
     Route::post('/store', [TeacherController::class, 'store']);
     Route::post('/searchTeacherByName', [TeacherController::class, 'searchTeacherByName']);
-    Route::get('/show/{id}', [TeacherController::class, 'show']);
+    //Route::get('/show/{id}', [TeacherController::class, 'show']);
     Route::post('/update/{teacher}', [TeacherController::class, 'update']);
 
     });

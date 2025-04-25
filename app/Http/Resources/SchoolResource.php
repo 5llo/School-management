@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\SchoolsClassesDivision;
+use Illuminate\Support\Facades\Auth;
+
 class SchoolResource extends JsonResource
 {
     /**
@@ -14,7 +16,7 @@ class SchoolResource extends JsonResource
     public function toArray(Request $request)
     {
         $teachersCount = $this->teachers()->count();
-        $studentsCount = SchoolsClassesDivision::find(auth())->students()->count();
+       // $studentsCount = $this->teachers->division->class->classsModel->count();
       
         return [
             'id' => $this->id,
@@ -25,7 +27,7 @@ class SchoolResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'teachers_count' => $teachersCount,
-           'students_count' => $studentsCount,
+          // 'students_count' => $this->classes->classsModel->name,//$this->teachers()->division()->class()->classsModel()->count(),
             
         ];
     }

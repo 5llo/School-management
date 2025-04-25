@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\TeacherResource;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
+use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
@@ -15,10 +16,16 @@ class TeacherController extends Controller
      */
     use GeneralTrait;
 
-    public function index($schoolId)
+    public function index()
     {
         try{
-        $teachers = Teacher::where('school_id', $schoolId)->get();
+            $school = Auth::user();
+
+            if (!$school) {
+                return response()->json(['message' => 'School not found'], 404);
+            }
+            $teachers = $school->teachers;
+    
         return $this->successResponse(TeacherResource::collection($teachers));
     }
         catch (\Exception $ex) {
@@ -91,11 +98,13 @@ class TeacherController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show()
     {
         try {
-            $teacher = Teacher::findOrFail($id);
-           // dd($teacher);
+            $teacher = Auth::user();
+            if (!$teacher) {
+                return $this->successResponse(['message' => 'Teacher not found'], 404);
+            }
            $teacherData=new TeacherResource($teacher);
            return $this->successResponse($teacherData);
         }  catch (\Exception $ex) {

@@ -12,36 +12,15 @@ class SchoolsClassesDivisiontResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request)
+    public function toArray($request)
     {
         return [
-           
-            'school_class' => [
-                'name' => $this->class->school->name,
-                
-            ],
-            'division' => [
-                //'id' => $this->division->id,
-                'name' => $this->division->name,
-                'students_count' => $this->students->count(),
-            ],
-            'teachers' => $this->teachers->map(function ($teacher) {
-                return [
-                    'id' => $teacher->id,
-                    'name' => $teacher->name,
-                ];
-            }),
-            'week_schedule'=> json_decode($this->week_schedule, true),
-            'exam_schedule'=> json_decode($this->exam_schedule, true),
-
-            'students' => $this->students->map(function ($student) {
-                return [
-                    'id' => $student->id,
-                    'name' => $student->name,
-                ];
-            }),
-    
+            'schoolname' => $this->class->school->name,
+            'division_name' => $this->division->name,
+            'class_name' => $this->class->classsModel->name,
+            'students_count' => $this->students->count(),
+            'week_schedule' => json_decode($this->week_schedule, true),
+            'exam_schedule' => json_decode($this->exam_schedule, true),
         ];
-    
     }
 }

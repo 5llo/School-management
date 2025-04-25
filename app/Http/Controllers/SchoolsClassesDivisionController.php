@@ -21,6 +21,30 @@ class SchoolsClassesDivisionController extends Controller
      */
     use GeneralTrait;
 
+    public function getWeek_Schedule(Request $request)
+{
+    try {
+       
+        $teacher = $request->user();
+
+        if (!$teacher) {
+            return response()->json(['message' => 'Teacher not found'], 404);
+        }
+        $division = $teacher->division;
+
+        if (!$division) {
+            return response()->json(['message' => 'Teacher is not assigned to any division'], 403);
+        }
+
+        $weekSchedule=new SchoolsClassesDivisiontResource($division);
+     
+        return $this->successResponse(['week_schedule' => $weekSchedule]);
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+}
+
+
     public function  getSchoolDivisionsDetails($schoolClassId,$divisionId)
     {
         try{

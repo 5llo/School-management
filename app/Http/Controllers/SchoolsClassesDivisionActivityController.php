@@ -70,7 +70,7 @@ class SchoolsClassesDivisionActivityController extends Controller
         }
 
         return $this->successResponse($schoolsClassesDivisionActivities);
-    } catch (Exception $e) {
+    } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
    }
