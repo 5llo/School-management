@@ -18,8 +18,6 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
             $table->foreignId('session_id')->constrained('sessions')->cascadeOnDelete();
-
-            $table->json('attendance_array')->nullable();
             $table->integer('oral_grade')->nullable();
             $table->integer('homework_grade')->nullable();
             $table->integer('exam_grade')->nullable();

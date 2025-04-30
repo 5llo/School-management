@@ -16,7 +16,7 @@ class SchoolResource extends JsonResource
     public function toArray(Request $request)
     {
         $teachersCount = $this->teachers()->count();
-       // $studentsCount = $this->teachers->division->class->classsModel->count();
+       // $studentsCount = $this->teachers->division->students->count();
       
         return [
             'id' => $this->id,

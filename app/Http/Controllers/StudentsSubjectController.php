@@ -122,7 +122,7 @@ public function showFinallyResult($studentId)
         $finalTotalMarks = $studentSubjects->sum('total_marks');
 
         return response()->json(['data' => $studentSubjects, 'final_total_marks' => $finalTotalMarks], 200);
-    } catch (Exception $ex) {
+    } catch (\Exception $ex) {
         return response()->json(['message' => $ex->getMessage()], 500);
     }
 }
