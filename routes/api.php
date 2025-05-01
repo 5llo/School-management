@@ -27,6 +27,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivitiesStudentController;
 use App\Http\Controllers\SchoolsClassesDivisionActivityController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\Authentication;
 
 
@@ -68,12 +69,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getBusDriverinfo', [BusDriverController::class, 'getBusDriverinfo']);
     Route::get('/getWeek_Schedule', [SchoolsClassesDivisionController::class, 'getWeek_Schedule']);
     Route::get('/showInfoTeacher', [TeacherController::class, 'show']);
+    Route::get('/getStudentsByDivision', [TeacherController::class, 'getStudentsByDivision']);
+    Route::get('/jana', [AttendanceController::class, 'updateAttendance']);
     Route::get('/showAllTeacherForSchool', [TeacherController::class, 'index']); //mahmoud
 
 });
 
 Route::post('/login', [Authentication::class, 'login']); 
 Route::post('/register', [Authentication::class, 'register']); 
+Route::post('/updateAttendance', [AttendanceController::class, 'updateAttendance']); 
+
 
 
 

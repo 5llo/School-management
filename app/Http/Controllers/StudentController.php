@@ -93,7 +93,7 @@ class StudentController extends Controller
     if($students->isNotEmpty()) {
         return $this->successResponse( $students,['count' => $studentCount]);}
     else {
-        return successResponse(['message' => 'No students found with that bus driver']);
+        return $this->successResponse(['message' => 'No students found with that bus driver']);
     }
     }
     catch (\Exception $ex) {

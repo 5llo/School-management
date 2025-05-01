@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Resources\TeacherResource;
+use App\Models\Student;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,18 @@ class TeacherController extends Controller
         }
     }
 
+    public function getStudentsByDivision()
+    {
+        try{
+        $teacher = Auth::user();
+        $students = Student::where('school_class_division_id', $teacher->schools_classes_division_id)->get();
+
+        return $this->successResponse($students);
+    }
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
 
     public function searchTeacherByName(Request $request)
     {
