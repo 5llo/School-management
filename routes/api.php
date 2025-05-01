@@ -70,14 +70,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getWeek_Schedule', [SchoolsClassesDivisionController::class, 'getWeek_Schedule']);
     Route::get('/showInfoTeacher', [TeacherController::class, 'show']);
     Route::get('/getStudentsByDivision', [TeacherController::class, 'getStudentsByDivision']);
-    Route::get('/jana', [AttendanceController::class, 'updateAttendance']);
+    Route::post('/getstudent-andoralgrade', [AttendanceController::class, 'updateAttendances']);//this make with us
+    Route::post('/setstudentsattendancesandoralgrade', [AttendanceController::class, 'setattendancesandgrade']);//this make with us
     Route::get('/showAllTeacherForSchool', [TeacherController::class, 'index']); //mahmoud
 
 });
 
-Route::post('/login', [Authentication::class, 'login']); 
-Route::post('/register', [Authentication::class, 'register']); 
-Route::post('/updateAttendance', [AttendanceController::class, 'updateAttendance']); 
+Route::post('/login', [Authentication::class, 'login']);
+Route::post('/register', [Authentication::class, 'register']);
+Route::post('/updateAttendance', [AttendanceController::class, 'updateAttendance']);
 
 
 
@@ -85,11 +86,11 @@ Route::post('/updateAttendance', [AttendanceController::class, 'updateAttendance
 
 //school
 Route::prefix('schools')->group(function () {
-    Route::get('/index', [SchoolController::class, 'index']); 
+    Route::get('/index', [SchoolController::class, 'index']);
     Route::post('/store', [SchoolController::class, 'store']);
     Route::get('/show/{id}', [SchoolController::class, 'show']);
-    Route::post('/Search', [SchoolController::class, 'searchSchoolByName']); 
-    Route::get('/countDivisionsPerClassInSchool/{schoolId}', [SchoolController::class, 'countDivisionsPerClassInSchool']); 
+    Route::post('/Search', [SchoolController::class, 'searchSchoolByName']);
+    Route::get('/countDivisionsPerClassInSchool/{schoolId}', [SchoolController::class, 'countDivisionsPerClassInSchool']);
 });
 
 //Parent
@@ -112,7 +113,7 @@ Route::prefix('food-meals')->group(function () {
 });
 
 //StudentsFoodMeal
-Route::get('/StudentsFoodMeal/{studentId}', [StudentsFoodMealController::class, 'studentFoodMeals']); 
+Route::get('/StudentsFoodMeal/{studentId}', [StudentsFoodMealController::class, 'studentFoodMeals']);
 Route::post('/StudentsFoodMeal/store', [StudentsFoodMealController::class, 'store']);
 
 
@@ -127,7 +128,7 @@ Route::prefix('teachers')->group(function () {
     });
 
 
-//Student 
+//Student
 Route::prefix('students')->group(function () {
     Route::get('/{divisionId}', [StudentController::class, 'index']);
     Route::post('/store/{schoolId}', [StudentController::class, 'store']);
@@ -163,7 +164,7 @@ Route::prefix('students')->group(function () {
 
 //ReslustContest
         Route::get('/orderContestParticipants/{contestId}', [ContestsStudentController::class, 'orderContestParticipants']);
-            
+
 //homework//
         Route::get('/teacher/{teacherId}/homeworks', [HomeworkController::class, 'index']);//
         Route::post('/homeworks', [HomeworkController::class,'store']);
@@ -172,7 +173,7 @@ Route::prefix('students')->group(function () {
 
 
 //Comment
-    Route::get('/Comments', [CommentController::class, 'index']); 
+    Route::get('/Comments', [CommentController::class, 'index']);
     Route::post('/Comments/store', [CommentController::class, 'store']); //
 
 
@@ -192,14 +193,14 @@ Route::prefix('schools-classes-division')->group(function () {
     Route::get('/{schoolClassId}/{divisionId}', [SchoolsClassesDivisionController::class, 'getSchoolDivisionsDetails']);
     Route::post('/store', [SchoolsClassesDivisionController::class, 'store']);
     Route::post('/searchStudentByNameInDivision/{divisionId}', [SchoolsClassesDivisionController::class, 'searchStudentByNameInDivision']);
-   
+
 
 });
 
 
 //AcademicYearController
 Route::prefix('academic-year')->group(function () {
-    Route::get('/index', [AcademicYearController::class, 'index']); 
+    Route::get('/index', [AcademicYearController::class, 'index']);
     Route::post('/store', [AcademicYearController::class, 'store']);
 
 });
@@ -257,7 +258,7 @@ Route::prefix('activity')->group(function () {
     Route::get('/getActiveActivities', [ActivityController::class, 'getActiveActivities']);
     Route::post('/store', [ActivityController::class, 'store']); //time/start/
     Route::get('/destroy/{id}', [ActivityController::class, 'destroy']);
-    Route::post('/searchActivityByName', [ActivityController::class, 'searchActivityByName']); 
+    Route::post('/searchActivityByName', [ActivityController::class, 'searchActivityByName']);
 });
 
 //ActivitiesStudent
