@@ -9,6 +9,7 @@ use App\Models\School;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Http\Resources\SchoolsClassesDivisiontResource;
+use App\Http\Resources\topStudentsResource;
 use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -70,7 +71,7 @@ public function getTopFeaturedStudents(Request $request)
           ->take(5) 
           ->get();
 
-          return $this->successResponse($topStudents);
+          return $this->successResponse(topStudentsResource::collection($topStudents));
         } catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
