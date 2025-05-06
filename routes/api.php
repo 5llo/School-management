@@ -73,6 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/getstudent-andoralgrade', [AttendanceController::class, 'updateAttendances']);//this make with us
     Route::post('/setstudentsattendancesandoralgrade', [AttendanceController::class, 'setattendancesandgrade']);//this make with us
     Route::get('/showAllTeacherForSchool', [TeacherController::class, 'index']); //mahmoud
+    Route::get('/getTopFeaturedStudents', [SchoolsClassesDivisionController::class, 'getTopFeaturedStudents']);
+
 
 });
 

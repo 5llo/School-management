@@ -9,6 +9,8 @@ use App\Models\School;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Http\Resources\SchoolsClassesDivisiontResource;
+use App\Http\Resources\topStudentsResource;
+use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
@@ -43,6 +45,39 @@ class SchoolsClassesDivisionController extends Controller
         return $this->errorResponse($ex->getMessage(), 500);
     }
 }
+
+public function getTopFeaturedStudents(Request $request)
+{
+    try {
+
+        $teacher = $request->user();
+
+        if (!$teacher) {
+            return response()->json(['message' => 'Teacher not found'], 404);
+        }
+
+        $division = $teacher->division;
+
+        if (!$division) {
+            return response()->json(['message' => 'Teacher is not assigned to any division'], 403);
+        }
+
+        $topStudents = StudentsSubject::whereHas('student', function ($query) use ($teacher) {
+            $query->whereHas('schoolClassDivision', function ($q) use ($teacher) {
+                $q->where('id', $teacher->division->id); 
+            });
+        })->orderBy('oral_grade', 'desc')
+          ->with('student')
+          ->take(5) 
+          ->get();
+
+          return $this->successResponse(topStudentsResource::collection($topStudents));
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+}
+
+
 
 
     public function  getSchoolDivisionsDetails($schoolClassId,$divisionId)
