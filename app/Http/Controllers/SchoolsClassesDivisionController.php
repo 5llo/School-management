@@ -24,7 +24,7 @@ class SchoolsClassesDivisionController extends Controller
     public function getWeek_Schedule(Request $request)
 {
     try {
-       
+
         $teacher = $request->user();
 
         if (!$teacher) {
@@ -37,8 +37,8 @@ class SchoolsClassesDivisionController extends Controller
         }
 
         $weekSchedule=new SchoolsClassesDivisiontResource($division);
-     
-        return $this->successResponse(['week_schedule' => $weekSchedule]);
+
+        return $this->successResponse( $weekSchedule);
     } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
@@ -74,7 +74,7 @@ class SchoolsClassesDivisionController extends Controller
     if($students->isNotEmpty()) {
         return $this->successResponse($students);
 
-    } 
+    }
     else {
         return $this->successResponse(['message' => 'No students found in the division with that name']);
     }
@@ -87,7 +87,7 @@ class SchoolsClassesDivisionController extends Controller
 
      public function index()
     {
-       
+
     }
 
     public function create()
@@ -112,8 +112,8 @@ class SchoolsClassesDivisionController extends Controller
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
-            ], 422); 
-        }  
+            ], 422);
+        }
          $data = $request->all();
         $schoolsClassesDivision = SchoolsClassesDivision::create($data);
         return $this->successResponse($schoolsClassesDivision);
