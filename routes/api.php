@@ -73,14 +73,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/getstudent-andoralgrade', [AttendanceController::class, 'updateAttendances']);//this make with us
     Route::post('/setstudentsattendancesandoralgrade', [AttendanceController::class, 'setattendancesandgrade']);//this make with us
     Route::get('/showAllTeacherForSchool', [TeacherController::class, 'index']); //mahmoud
-    Route::get('/getTopFeaturedStudents', [SchoolsClassesDivisionController::class, 'getTopFeaturedStudents']);
+    Route::get('/getTopFeaturedStudents', [SchoolsClassesDivisionController::class, 'getTopFeaturedStudents']);//khalil
+    Route::get('/getALLStudentInfo', [StudentController::class, 'getALLStudentInfo']);//khalil
+    Route::get('/getStudentsInfoForSchool', [SchoolController::class, 'getStudentsInfoForSchool']);//mahmoud
+
+   
+
 
 
 });
 
 Route::post('/login', [Authentication::class, 'login']);
 Route::post('/register', [Authentication::class, 'register']);
-Route::post('/updateAttendance', [AttendanceController::class, 'updateAttendance']);
+Route::get('/getStudentInfo/{id}', [StudentController::class, 'getStudentInfo']);//khalil
+
 
 
 

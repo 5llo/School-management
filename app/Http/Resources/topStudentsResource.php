@@ -16,9 +16,9 @@ class topStudentsResource extends JsonResource
     {
         return [
             'student_id' => $this->student_id,
-            'session_id' => $this->session_id,
+            //'session_id' => $this->session_id,
             'name' => $this->student->name,
-            'oral_grade' => $this->oral_grade,
+           // 'oral_grade' => $this->oral_grade,
         ];
     }
 }
