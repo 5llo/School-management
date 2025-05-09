@@ -62,14 +62,17 @@ public function getTopFeaturedStudents(Request $request)
             return response()->json(['message' => 'Teacher is not assigned to any division'], 403);
         }
 
-        $topStudents = StudentsSubject::whereHas('student', function ($query) use ($teacher) {
+        $topStudents = StudentsSubject::select('student_id')
+        ->whereHas('student', function ($query) use ($teacher) {
             $query->whereHas('schoolClassDivision', function ($q) use ($teacher) {
                 $q->where('id', $teacher->division->id); 
             });
-        })->orderBy('oral_grade', 'desc')
-          ->with('student')
-          ->take(5) 
-          ->get();
+        })->whereHas('session', function ($query) {
+            $query->where('id', 1); // اختيار الفصل بمعرف 1
+        })->orderByRaw('MAX(oral_grade) desc')
+        ->groupBy('student_id') // تجنب تكرار نفس الطالب
+        ->take(5) 
+        ->get();
 
           return $this->successResponse(topStudentsResource::collection($topStudents));
         } catch (\Exception $ex) {

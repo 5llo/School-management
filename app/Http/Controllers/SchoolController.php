@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\School;
 use App\Http\Resources\SchoolResource;
+use App\Http\Resources\StudentResource;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
 
@@ -16,6 +17,34 @@ class SchoolController extends Controller
      */
     use GeneralTrait;
 
+    public function getStudentsInfoForSchool()
+{
+    try {
+        $school = auth()->user();
+
+        if ($school) {
+            $teachers = $school->teachers;
+           // return $teachers;
+            $studentsData = [];
+
+            foreach ($teachers as $teacher) {
+                if ($teacher->division) {
+                    $students = $teacher->division->students;
+
+                    foreach ($students as $student) {
+                        $studentResource = new StudentResource($student);
+                        $studentsData[] = $studentResource;
+                    }
+                }
+            }
+
+            return $this->successResponse($studentsData);
+        } else {
+            return $this->errorResponse('User not authenticated as a school', 401);
+        }} catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
     public function index()
     {
         try{
