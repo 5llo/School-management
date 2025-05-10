@@ -76,6 +76,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getTopFeaturedStudents', [SchoolsClassesDivisionController::class, 'getTopFeaturedStudents']);//khalil
     Route::get('/getALLStudentInfo', [StudentController::class, 'getALLStudentInfo']);//khalil
     Route::get('/getStudentsInfoForSchool', [SchoolController::class, 'getStudentsInfoForSchool']);//mahmoud
+    Route::post('/teachers/store', [TeacherController::class, 'store']);
+
 
    
 
@@ -128,7 +130,7 @@ Route::post('/StudentsFoodMeal/store', [StudentsFoodMealController::class, 'stor
 //teacher
 Route::prefix('teachers')->group(function () {
     Route::get('/{schoolId}', [TeacherController::class, 'index']);
-    Route::post('/store', [TeacherController::class, 'store']);
+    //Route::post('/store', [TeacherController::class, 'store']);
     Route::post('/searchTeacherByName', [TeacherController::class, 'searchTeacherByName']);
     //Route::get('/show/{id}', [TeacherController::class, 'show']);
     Route::post('/update/{teacher}', [TeacherController::class, 'update']);
@@ -141,7 +143,7 @@ Route::prefix('students')->group(function () {
     Route::get('/{divisionId}', [StudentController::class, 'index']);
     Route::post('/store/{schoolId}', [StudentController::class, 'store']);
     Route::post('/update/{student}', [StudentController::class, 'update']);
-    Route::get('/getStudentInfoForSchool/{studentId}/{schoolId}', [StudentController::class, 'getStudentInfoForSchool']);
+    //Route::get('/getStudentInfoForSchool/{studentId}/{schoolId}', [StudentController::class, 'getStudentInfoForSchool']);
     Route::post('/searchStudentByName', [StudentController::class, 'searchStudentByName']);
     Route::post('/searchStudentsInBus', [StudentController::class, 'searchStudentsInBus']);
 
