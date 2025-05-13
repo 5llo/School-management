@@ -14,7 +14,7 @@ use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
-
+use Illuminate\Support\Facades\Auth;
 
 class SchoolsClassesDivisionController extends Controller
 {
@@ -152,7 +152,9 @@ public function getTopFeaturedStudents(Request $request)
                 'errors' => $validator->errors()
             ], 422); 
         }  
+        $user = Auth::user();
          $data = $request->all();
+         $data['user_id'] = $user->id;
         $schoolsClassesDivision = SchoolsClassesDivision::create($data);
         return $this->successResponse($schoolsClassesDivision);
     }

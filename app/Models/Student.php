@@ -52,8 +52,8 @@ class Student extends Model
             'session_id',
          //   'attendance_array',
             'oral_grade',
-         //   'homework_grade',
-           // 'exam_grade'
+            'homework_grade',
+           'exam_grade'
         ]);;
     }
 
@@ -82,5 +82,10 @@ class Student extends Model
     public function notifications()
     {
         return $this->morphMany(Notification::class, 'notifiable');
+    }
+
+      public function attendances()
+    {
+        return $this->belongsTo(Attendance::class);
     }
 }

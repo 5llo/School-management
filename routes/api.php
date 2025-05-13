@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getALLStudentInfo', [StudentController::class, 'getALLStudentInfo']);//khalil
     Route::get('/getStudentsInfoForSchool', [SchoolController::class, 'getStudentsInfoForSchool']);//mahmoud
     Route::post('/teachers/store', [TeacherController::class, 'store']);
+    Route::post('/SchoolsClassesDivision/store', [SchoolsClassesDivisionController::class, 'store']);
 
 
    
@@ -201,7 +202,7 @@ Route::prefix('buses')->group(function () {
 Route::prefix('schools-classes-division')->group(function () {
 
     Route::get('/{schoolClassId}/{divisionId}', [SchoolsClassesDivisionController::class, 'getSchoolDivisionsDetails']);
-    Route::post('/store', [SchoolsClassesDivisionController::class, 'store']);
+    //Route::post('/store', [SchoolsClassesDivisionController::class, 'store']);
     Route::post('/searchStudentByNameInDivision/{divisionId}', [SchoolsClassesDivisionController::class, 'searchStudentByNameInDivision']);
 
 

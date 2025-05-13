@@ -7,6 +7,7 @@ use App\Models\BusDriver;
 use Illuminate\Http\Request;
 use App\Http\Resources\StudentResource;
 use App\Models\Attendance;
+use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
 use Carbon\Carbon;
@@ -31,10 +32,12 @@ class StudentController extends Controller
             }
     
             $studentData = new StudentResource($student);
-    
+            $marksData=$student->subjects;
+     //$marksData = StudentsSubject::where('student_id', $id)->with('subject')->get();
             // Step 2: Fetch the student's attendance record
+            // $attendanceData = $student->attendances;
             $attendanceData = Attendance::where('student_id', $id)->first();
-    
+               
             // Step 3: Check if attendance data is available
             if (!$attendanceData || empty($attendanceData->attendance_array)) {
                 return $this->successResponse([
@@ -80,7 +83,8 @@ class StudentController extends Controller
             // Step 8: Return the result in the expected format
             return $this->successResponse([
                 'student_info' => $studentData,
-                'attendance_last_six_days' => $lastSixDaysAttendance
+                'attendance_last_six_days' => $lastSixDaysAttendance,
+                'marks' => $marksData
             ]);
     
         } catch (\Exception $ex) {
@@ -101,7 +105,7 @@ class StudentController extends Controller
         
         foreach ($students as $student) {
             $studentData = new StudentResource($student);
-
+            $marksData=StudentsSubject::where('student_id', $student->id )->with('subject')->get();
             // Fetch the student's attendance record
             $attendanceData = Attendance::where('student_id', $student->id)->first();
 
@@ -133,7 +137,9 @@ class StudentController extends Controller
 
                 $allStudentData[] = [
                     'student_info' => $studentData,
-                    'attendance_last_six_days' => $lastSixDaysAttendance
+                    'attendance_last_six_days' => $lastSixDaysAttendance,
+                'marks' => $marksData
+
                 ];
             }
         }
