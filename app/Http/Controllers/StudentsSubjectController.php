@@ -137,37 +137,35 @@ public function showFinallyResult($studentId)
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, StudentsSubject $studentsSubject)
-    {
-        try{
-        $studentSubject = StudentsSubject::find($studentsSubject);
+    public function updateStudentGrades($studentId, $subjectId, Request $request)
+{
+    try {
+    $studentSubject = StudentsSubject::where('student_id', $studentId)
+        ->where('subject_id', $subjectId)
+        ->first();
 
-        if (!$studentSubject) {
-            return response()->json(['message' => 'Student subject not found'], 404);
+    if (!$studentSubject) {
+        return response()->json(['message' => 'Student subject not found'], 404);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'oral_grade' => 'required|numeric',
+        'homework_grade' => 'required|numeric',
+        'exam_grade' => 'required|numeric',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['message' => $validator->errors()], 422);
+    }
+
+    $data = $request->only(['oral_grade', 'homework_grade', 'exam_grade']);
+
+    $studentSubject->update($data);
+
+    return  $this->successResponse(['message' => 'Grades updated successfully', 'data' => $studentSubject]);
+    } catch (\Exception $ex) {  
+        return $this->errorResponse($ex->getMessage(), 500);    
         }
-
-        $validator = Validator::make($request->all(),[
-            'attendance_array' => 'required|array',
-            'oral_grade' => 'required|numeric',
-            'homework_grade' => 'required|numeric',
-            'exam_grade' => 'required|numeric',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422); 
-        }
-        $data = $request->all();
-
-        $studentsSubject->update($data);
-        
-        return $this->successResponse($studentsSubject, 'updated successfull.');
-        } catch (\Exception $ex) {  
-            return $this->errorResponse($ex->getMessage(), 500);    
-            }
-            
     }
 
     
