@@ -83,7 +83,7 @@ class TeacherController extends Controller
     {
         try {
         $validator = Validator::make($request->all(),[
-            'school_id' => 'required|integer|exists:schools,id',
+            //'school_id' => 'required|integer|exists:schools,id',
             'schools_classes_division_id' => 'required|integer|exists:schools_classes_division,id',
             'phone' => 'required|string',
             'gender' => 'required|in:Male,Female',
@@ -99,7 +99,9 @@ class TeacherController extends Controller
             ], 422); 
         }
         $data = $request->all();
+        $data['school_id'] = Auth::user()->id;
         $data['password'] = bcrypt($data['password']);
+        //dd($data);
         $teacher = Teacher::create($data);
         return $this->successResponse($teacher, 'created successfull.');
     } catch (\Exception $ex) {

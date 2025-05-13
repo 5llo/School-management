@@ -14,7 +14,7 @@ use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
-
+use Illuminate\Support\Facades\Auth;
 
 class SchoolsClassesDivisionController extends Controller
 {
@@ -139,8 +139,9 @@ public function getTopFeaturedStudents(Request $request)
     public function store(Request $request)
     {
         try{
+
         $validator = Validator::make($request->all(), [
-            'school_class_id' => 'required|exists:schools_classes,id',
+            'class_id' => 'required|exists:classes,id',
             'division_id' => 'required|exists:divisions,id',
             'exam_schedule' => 'nullable',
             'week_schedule' => 'nullable',
@@ -152,8 +153,17 @@ public function getTopFeaturedStudents(Request $request)
                 'errors' => $validator->errors()
             ], 422); 
         }  
+       
          $data = $request->all();
-        $schoolsClassesDivision = SchoolsClassesDivision::create($data);
+     $school = Auth::user()->id;
+    $schoolClass = SchoolsClass::updateOrCreate(
+    ['school_id' => $school, 'class_id' => $data['class_id']],
+);
+
+         $schoolsClassesDivision = SchoolsClassesDivision::updateOrCreate(
+    ['school_class_id' =>$schoolClass->id, 'division_id' => $data['division_id']],
+);
+
         return $this->successResponse($schoolsClassesDivision);
     }
         catch (\Exception $ex) {
