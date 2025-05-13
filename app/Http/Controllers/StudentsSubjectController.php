@@ -36,33 +36,7 @@ class StudentsSubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-        $validator = Validator::make($request->all(), [
-            'student_id' => 'required|exists:students,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'session_id' => 'required|exists:sessions,id',
-            'attendance_array' => 'array',
-            'oral_grade' => 'numeric',
-            'homework_grade' => 'numeric',
-            'exam_grade' => 'numeric',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422); 
-        }  
-         $data = $request->all();
-        $studentsSubject = StudentsSubject::create($data);
-        return $this->successResponse($studentsSubject, 'created successfull.');
-    } catch (\Exception $ex) {
-        return $this->errorResponse($ex->getMessage(), 500);
-    }
-    }
-
+   
     /**
      * Display the specified resource.
      */
@@ -137,18 +111,12 @@ public function showFinallyResult($studentId)
     /**
      * Update the specified resource in storage.
      */
-    public function updateStudentGrades($studentId, $subjectId, Request $request)
+    public function updateStudentGrades(Request $request)
 {
     try {
-    $studentSubject = StudentsSubject::where('student_id', $studentId)
-        ->where('subject_id', $subjectId)
-        ->first();
-
-    if (!$studentSubject) {
-        return response()->json(['message' => 'Student subject not found'], 404);
-    }
-
     $validator = Validator::make($request->all(), [
+        'student_id' => 'required|exists:students,id',
+        'subject_id' => 'required|exists:subjects,id',
         'oral_grade' => 'required|numeric',
         'homework_grade' => 'required|numeric',
         'exam_grade' => 'required|numeric',
@@ -158,8 +126,21 @@ public function showFinallyResult($studentId)
         return response()->json(['message' => $validator->errors()], 422);
     }
 
-    $data = $request->only(['oral_grade', 'homework_grade', 'exam_grade']);
+    $data = $request->only(['student_id', 'subject_id', 'oral_grade', 'homework_grade', 'exam_grade']);
 
+    $studentSubject = StudentsSubject::where('student_id', $data['student_id'])
+        ->where('subject_id', $data['subject_id'])
+        ->first();
+
+    if (!$studentSubject) {
+        return response()->json(['message' => 'Student subject not found'], 404);
+    }
+
+    $studentSubject->update([
+        'oral_grade' => $data['oral_grade'],
+        'homework_grade' => $data['homework_grade'],
+        'exam_grade' => $data['exam_grade'],
+    ]);
     $studentSubject->update($data);
 
     return  $this->successResponse(['message' => 'Grades updated successfully', 'data' => $studentSubject]);

@@ -84,8 +84,5 @@ class Student extends Model
         return $this->morphMany(Notification::class, 'notifiable');
     }
 
-      public function attendances()
-    {
-        return $this->belongsTo(Attendance::class);
-    }
+     
 }

@@ -89,7 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/login', [Authentication::class, 'login']);
 Route::post('/register', [Authentication::class, 'register']);
 Route::get('/getStudentInfo/{id}', [StudentController::class, 'getStudentInfo']);//khalil
-Route::post('/updateStudentGrades/{studentId}/{subjectId}', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
+Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
 
 
 
