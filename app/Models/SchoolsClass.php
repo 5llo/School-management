@@ -22,7 +22,7 @@ class SchoolsClass extends Model
 
     public function divisions()
     {
-        return $this->hasMany(SchoolsClassesDivision::class);
+        return $this->hasMany(SchoolsClassesDivision::class,'school_class_id');
     }
 
     public function classsModel()

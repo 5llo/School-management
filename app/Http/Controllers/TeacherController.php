@@ -84,7 +84,7 @@ class TeacherController extends Controller
         try {
         $validator = Validator::make($request->all(),[
             //'school_id' => 'required|integer|exists:schools,id',
-            'schools_classes_division_id' => 'required|integer|exists:schools_classes_division,id',
+            'division_id' => 'required|integer|exists:schools_classes_division,division_id',
             'phone' => 'required|string',
             'gender' => 'required|in:Male,Female',
             'email' => 'required|email|unique:teachers',

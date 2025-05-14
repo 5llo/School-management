@@ -78,7 +78,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getStudentsInfoForSchool', [SchoolController::class, 'getStudentsInfoForSchool']);//mahmoud
     Route::post('/teachers/store', [TeacherController::class, 'store']);
     Route::post('/SchoolsClassesDivision/store', [SchoolsClassesDivisionController::class, 'store']);
-
+Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
+    Route::get('/getSchoolClassesDivisions', [SchoolController::class, 'getSchoolClassesDivisions']);
 
    
 
@@ -89,7 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/login', [Authentication::class, 'login']);
 Route::post('/register', [Authentication::class, 'register']);
 Route::get('/getStudentInfo/{id}', [StudentController::class, 'getStudentInfo']);//khalil
-Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
+
 
 
 

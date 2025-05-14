@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\School;
 use App\Http\Resources\SchoolResource;
 use App\Http\Resources\StudentResource;
+use App\Models\SchoolsClass;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SchoolController extends Controller
 {
@@ -57,7 +59,46 @@ class SchoolController extends Controller
     }
 
     
+ public function getSchoolClassesDivisions()
+    {
+        try {
+        
+             $schoolId = Auth::user()->id;
+     $schoolClasses = SchoolsClass::where('school_id', $schoolId)->get();
 
+        $allSchoolData = [];
+
+        foreach ($schoolClasses as $schoolClass) {
+            $classId = $schoolClass->id;
+            $className = $schoolClass->classsModel->name;
+            $divisionsData = [];
+            foreach ($schoolClass->divisions as $division) {
+                $divisionId = $division->division->id;
+                $divisionName = $division->division->name;
+
+                $divisionData = [
+                    'division_id' => $divisionId,
+                    'division_name' => $divisionName
+                ];
+
+                $divisionsData[] = $divisionData;
+            }
+
+            $schoolClassData = [
+                'class_id' => $classId,
+                'class_name' => $className,
+                'divisions' => $divisionsData
+            ];
+
+            $allSchoolData[] = $schoolClassData;
+        }
+  return $this->successResponse($allSchoolData);
+    }
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
+    
     /**
      * Show the form for creating a new resource.
      */
@@ -69,41 +110,7 @@ class SchoolController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'bus_price' => 'nullable|numeric',
-            'email' => 'required|email|unique:schools,email',
-            'password' => 'required|min:6',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
-
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422); 
-        }
     
-        
-        $data = $request->all();
-        $data['password'] = bcrypt($data['password']);
-    
-        
-        $School = School::create($data);
-    
-        return $this->successResponse($School);
-    }
-        catch (\Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), 500);
-        }
-    
-    }
 
     /**
      * Display the specified resource.
