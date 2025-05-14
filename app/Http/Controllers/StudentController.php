@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StudentInfoResource;
+use App\Http\Resources\StudentMarksResource;
 use App\Models\Student;
 use App\Models\BusDriver;
 use Illuminate\Http\Request;
@@ -104,8 +106,9 @@ class StudentController extends Controller
         $allStudentData = [];
         
         foreach ($students as $student) {
-            $studentData = new StudentResource($student);
+            $studentData = new StudentInfoResource($student);
             $marksData=StudentsSubject::where('student_id', $student->id )->with('subject')->get();
+            $studentmarksData=StudentMarksResource::collection($marksData);;
             // Fetch the student's attendance record
             $attendanceData = Attendance::where('student_id', $student->id)->first();
 
@@ -136,9 +139,9 @@ class StudentController extends Controller
                 }
 
                 $allStudentData[] = [
-                    'student_info' => $studentData,
-                    'attendance_last_six_days' => $lastSixDaysAttendance,
-                'marks' => $marksData
+                    $studentData,
+                    $lastSixDaysAttendance,
+                  $studentmarksData
 
                 ];
             }
