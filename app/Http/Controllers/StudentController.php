@@ -100,17 +100,61 @@ class StudentController extends Controller
     public function getALLStudentInfo()
 {
     try {
-        // Step 1: Find all students
-        $students = Auth::user()->division->students()->get();
+       
+          $students = Auth::user()->division->students;
 
         $allStudentData = [];
-        
+
         foreach ($students as $student) {
-            $studentData = new StudentInfoResource($student);
-            $marksData=StudentsSubject::where('student_id', $student->id )->with('subject')->get();
-            $studentmarksData=StudentMarksResource::collection($marksData);;
-            // Fetch the student's attendance record
+           
+            $studentInfo = new StudentInfoResource($student);
+
+            $marksData = StudentsSubject::where('student_id', $student->id)
+                ->with('subject')
+                ->get();
+
+            $attendanceMarkValue = 0;
+
             $attendanceData = Attendance::where('student_id', $student->id)->first();
+            if ($attendanceData && !empty($attendanceData->attendance_array)) {
+                $attendanceArray = is_string($attendanceData->attendance_array)
+                    ? json_decode($attendanceData->attendance_array, true)
+                    : $attendanceData->attendance_array;
+
+                $totalUnits = 0;
+                $totalDays = 0;
+                $end = Carbon::now()->endOfDay();
+
+                foreach ($attendanceArray as $item) {
+                    $date = key($item);
+                    $values = reset($item);
+
+                    try {
+                        $dateParsed = Carbon::parse($date)->startOfDay();
+                        if ($dateParsed <= $end) {
+                            $totalDays++;
+                            $totalUnits += array_sum($values);
+                        }
+                    } catch (\Exception $e) {}
+                }
+
+                if ($totalDays > 0) {
+                    $unitsPercentage = ($totalUnits / ($totalDays * 10)) * 100;
+                    $attendanceMarks = ($unitsPercentage / 100) * 10;
+                    $attendanceMarkValue = ceil($attendanceMarks);
+                }
+            }
+
+           
+            $marksData->each(function ($mark) use ($attendanceMarkValue) {
+                $mark->attendance_grade = $attendanceMarkValue;
+            });
+
+            $studentMarks = StudentMarksResource::collection($marksData);
+
+
+            $lastSixDaysAttendance = [];
+            
 
             if ($attendanceData && !empty($attendanceData->attendance_array)) {
                 $attendanceArray = is_string($attendanceData->attendance_array)
@@ -119,7 +163,9 @@ class StudentController extends Controller
 
                 $start = Carbon::now()->subDays(5)->startOfDay();
                 $end = Carbon::now()->endOfDay();
-                $lastSixDaysAttendance = [];
+
+                $totalUnits = 0;
+                $totalDays = 0;
 
                 foreach ($attendanceArray as $attendanceItem) {
                     $date = key($attendanceItem);
@@ -127,24 +173,31 @@ class StudentController extends Controller
 
                     try {
                         $attendanceDate = Carbon::parse($date)->startOfDay();
+
                         if ($attendanceDate->between($start, $end)) {
                             $lastSixDaysAttendance[] = [
                                 'date' => $date,
                                 'attendance_values' => $attendanceValues
                             ];
                         }
+
+                
+                        if ($attendanceDate <= $end) {
+                            $totalDays++;
+                            $totalUnits += array_sum($attendanceValues);
+                        }
                     } catch (\Exception $ex) {
                         continue;
                     }
                 }
 
-                $allStudentData[] = [
-                    $studentData,
-                    $lastSixDaysAttendance,
-                  $studentmarksData
-
-                ];
             }
+            $allStudentData[] = [
+                $studentInfo,
+                 $lastSixDaysAttendance,
+                 $studentMarks,
+         
+            ];
         }
 
         return $this->successResponse($allStudentData);
@@ -153,6 +206,8 @@ class StudentController extends Controller
         return $this->errorResponse($ex->getMessage(), 500);
     }
 }
+
+
 
 
     
