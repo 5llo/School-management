@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\StudentsSubjectResource;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
+use Illuminate\Support\Facades\Auth;
+
 class StudentsSubjectController extends Controller
 {
     /**
@@ -114,12 +116,17 @@ public function showFinallyResult($studentId)
     public function updateStudentGrades(Request $request)
 {
     try {
+        
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $user = Auth::user();
     $validator = Validator::make($request->all(), [
         'student_id' => 'required|exists:students,id',
         'subject_id' => 'required|exists:subjects,id',
-        'oral_grade' => 'required|numeric',
-        'homework_grade' => 'required|numeric',
-        'exam_grade' => 'required|numeric',
+        'oral_grade' => 'required|numeric|between:0,20',
+        'homework_grade' => 'required|numeric|between:0,20',
+        'exam_grade' => 'required|numeric|between:0,50',
     ]);
 
     if ($validator->fails()) {
