@@ -80,6 +80,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/SchoolsClassesDivision/store', [SchoolsClassesDivisionController::class, 'store']);
 Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
     Route::get('/getSchoolClassesDivisions', [SchoolController::class, 'getSchoolClassesDivisions']);
+    Route::post('/getDivisionIdByClassId', [ClassModelController::class, 'getDivisionIdByClassId']);
+    Route::get('/getAttendanceWithUnits', [StudentController::class, 'getAttendanceWithUnits']);//mahmoud
+
+
 
    
 

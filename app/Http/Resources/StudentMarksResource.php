@@ -20,6 +20,9 @@ class StudentMarksResource extends JsonResource
            'oral_grade' => $this['oral_grade'],
             'homework_grade' => $this->homework_grade,
             'exam_grade' => $this->exam_grade,
+            'attendance_grade' => $this['attendance_grade'] ?? null,
+            //ttendance_Marks'=>$this->extraData['attendanceMarks']->first(),
+
             
         ];
     }
