@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Attendance;
 
 class Student extends Model
 {
@@ -19,6 +20,10 @@ class Student extends Model
     public function parent()
     {
         return $this->belongsTo(ParentModel::class);
+    }
+    public function attendance()
+    {
+        return $this->hasOne(Attendance::class);
     }
 
     public function schoolClassDivision()
@@ -52,10 +57,9 @@ class Student extends Model
             'session_id',
          //   'attendance_array',
             'oral_grade',
-         //   'homework_grade',
-           // 'exam_grade'
-            //'homework_grade_id
-            //slashh
+
+            'homework_grade',
+           'exam_grade'
         ]);;
     }
 
@@ -85,4 +89,6 @@ class Student extends Model
     {
         return $this->morphMany(Notification::class, 'notifiable');
     }
+
+     
 }

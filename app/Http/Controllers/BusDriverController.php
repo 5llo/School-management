@@ -16,6 +16,7 @@ class BusDriverController extends Controller
      */
     use GeneralTrait;
 
+
     public function getBusDriversBySchool()
     {
         try{
@@ -23,6 +24,7 @@ class BusDriverController extends Controller
             $busDrivers = BusDriver::where('school_id', $schoolId)->get();
             return $this->successResponse(BusResource::collection($busDrivers));
         }
+
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
@@ -110,14 +112,14 @@ class BusDriverController extends Controller
     {
         try{
         $validator = Validator::make($request->all(), [
-            'school_id' => 'required|exists:schools,id',
             'name' => 'required',
             'email' => 'required|email|unique:bus_drivers',
             'password' => 'required',
             'latitude' => 'nullable',
             'longitude' => 'nullable',
-            'bus_number' => 'required|integer|unique:bus_drivers,bus_number,NULL,id,school_id,' . $request->school_id,
-            'bus_capacity' => 'required|integer',
+            'phone'=>'required|string',
+           // 'bus_number' => 'required|integer|unique:bus_drivers,bus_number,NULL,id,school_id,' . $request->school_id,
+            'bus_capacity' => 'required|integer|max:30',
         ]);
 
         if ($validator->fails()) {
@@ -125,9 +127,10 @@ class BusDriverController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $validator->errors(),
             ], 422);
-        }
+
 
         $data = $request->all();
+
 
        $data['password'] = bcrypt($data['password']);
 

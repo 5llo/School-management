@@ -7,6 +7,8 @@ use App\Models\SchoolsClassesDivision;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Resources\TeacherResource;
+use App\Models\SchoolsClass;
+use App\Models\SchoolsClassesDivision;
 use App\Models\Student;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
@@ -84,6 +86,7 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         try {
+
             $validator = Validator::make($request->all(),[
                 'class_id' => 'required|integer|exists:classes,id',
                 'division_id' => 'required|integer|exists:schools_classes_division,division_id',
@@ -127,6 +130,7 @@ class TeacherController extends Controller
             return $this->errorResponse($ex->getMessage(), 500);
         }
 
+
     }
     /**
      * Display the specified resource.
@@ -155,42 +159,44 @@ class TeacherController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Teacher $teacher)
-    {
-        try {
-        $teacherData = Teacher::find($teacher);
+    // public function update(Request $request, Teacher $teacher)
+    // {
+    //     try {
+    //     $teacherData = Teacher::find($teacher);
 
-        if (!$teacherData) {
-            return response()->json(['message' => 'Teacher not found'], 404);
-        }
+    //     if (!$teacherData) {
+    //         return response()->json(['message' => 'Teacher not found'], 404);
+    //     }
 
 
-            $validator = Validator::make($request->all(),[
-                //'school_id' => 'required|integer|exists:schools,id',
-                'schools_classes_division_id' => 'required|integer|exists:schools_classes_division,id',
-                'phone' => 'required|string',
-               // 'gender' => 'required|in:Male,Female',
-               // 'email' => 'required|email|unique:teachers',
-                'password' => 'required|string|min:6',
-                'name' => 'required|string',
-            ]);
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation Error',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-        $data['password'] = bcrypt($data['password']);
-            $data = $request->all();
-            $teacher->update($data);
-            return $this->successResponse($teacher, 'update successfull.');
-        } catch (\Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), 500);
-        }
-
-        }
-
+       
+    //         $validator = Validator::make($request->all(),[
+    //             //'school_id' => 'required|integer|exists:schools,id',
+    //             'schools_classes_division_id' => 'required|integer|exists:schools_classes_division,id',
+    //             'phone' => 'required|string',
+    //            // 'gender' => 'required|in:Male,Female',
+    //            // 'email' => 'required|email|unique:teachers',
+    //             'password' => 'required|string|min:6',
+    //             'name' => 'required|string',
+    //         ]);
+    //         if ($validator->fails()) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Validation Error',
+    //                 'errors' => $validator->errors()
+    //             ], 422); 
+    //         }
+    //     $data['password'] = bcrypt($data['password']);
+    //         $data = $request->all();
+    //         $teacher->update($data);
+    //         return $this->successResponse($teacher, 'update successfull.');
+    //     } catch (\Exception $ex) {
+    //         return $this->errorResponse($ex->getMessage(), 500);
+    //     }
+            
+    //     }
+    
+    
 
 
     /**

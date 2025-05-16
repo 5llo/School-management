@@ -5,12 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Resources\StudentResource;
 use App\Models\School;
 use App\Http\Resources\SchoolResource;
+
 use App\Models\SchoolsClass;
 use Illuminate\Support\Facades\Auth;
+
+use App\Http\Resources\StudentResource;
+
+
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SchoolController extends Controller
 {
@@ -43,17 +49,7 @@ class SchoolController extends Controller
                     $divisionsData[] = $divisionData;
                 }
 
-                $schoolClassData = [
-                    'class_id' => $classId,
-                    'class_name' => $className,
-                    'divisions' => $divisionsData
-                ];
 
-                $allSchoolData[] = $schoolClassData;
-            }
-            return $this->successResponse($allSchoolData);
-        }
-        catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
     }
@@ -68,8 +64,47 @@ class SchoolController extends Controller
         }
     }
 
+    
+ public function getSchoolClassesDivisions()
+    {
+        try {
+        
+             $schoolId = Auth::user()->id;
+     $schoolClasses = SchoolsClass::where('school_id', $schoolId)->get();
 
+        $allSchoolData = [];
 
+        foreach ($schoolClasses as $schoolClass) {
+            $classId = $schoolClass->id;
+            $className = $schoolClass->classsModel->name;
+            $divisionsData = [];
+            foreach ($schoolClass->divisions as $division) {
+                $divisionId = $division->division->id;
+                $divisionName = $division->division->name;
+
+                $divisionData = [
+                    'division_id' => $divisionId,
+                    'division_name' => $divisionName
+                ];
+
+                $divisionsData[] = $divisionData;
+            }
+
+            $schoolClassData = [
+                'class_id' => $classId,
+                'class_name' => $className,
+                'divisions' => $divisionsData
+            ];
+
+            $allSchoolData[] = $schoolClassData;
+        }
+  return $this->successResponse($allSchoolData);
+    }
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
+    
     /**
      * Show the form for creating a new resource.
      */
@@ -81,6 +116,7 @@ class SchoolController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         try {
@@ -116,6 +152,7 @@ class SchoolController extends Controller
         }
 
     }
+
 
     /**
      * Display the specified resource.

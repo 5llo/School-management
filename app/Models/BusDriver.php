@@ -17,7 +17,7 @@ class BusDriver extends Model
         'password',
         'latitude',
         'longitude',
-        'bus_number',
+        'phone',
         'bus_capacity',
     ];
 
