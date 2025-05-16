@@ -36,11 +36,11 @@ class StudentController extends Controller
             // Step 1: Find the student
             $student = Student::find($id);
 
-    
+
             if (!$student) {
                 return response()->json(['message' => 'Student not found'], 404);
             }
-    
+
 
             $studentData = new StudentResource($student);
             $marksData=$student->subjects;
@@ -376,16 +376,40 @@ public function getALLStudentInfo()
         $studentResource = new StudentResource($student);
 
         return $this->successResponse($studentResource);
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
     }
 
-    }
+
 
 }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Request $request)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     public function show(Request $request)
     {
 
         try {
@@ -410,7 +434,7 @@ public function getALLStudentInfo()
 
      return $this->successResponse($parentResource);
     }
-    
+
     catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }

@@ -20,7 +20,7 @@ class StudentsSubjectController extends Controller
         try {
             $studentsSubjects = StudentsSubject::with('student', 'subject', 'session')->get();
             return $this->successResponse($studentsSubjects);
-        } 
+        }
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
@@ -38,7 +38,7 @@ class StudentsSubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   
+
     /**
      * Display the specified resource.
      */
@@ -117,23 +117,7 @@ public function showFinallyResult($studentId)
 {
 
     try {
-        
 
-        if (!Auth::check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-        $user = Auth::user();
-    $validator = Validator::make($request->all(), [
-        'student_id' => 'required|exists:students,id',
-        'subject_id' => 'required|exists:subjects,id',
-        'oral_grade' => 'required|numeric|between:0,20',
-        'homework_grade' => 'required|numeric|between:0,20',
-        'exam_grade' => 'required|numeric|between:0,50',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json(['message' => $validator->errors()], 422);
-    }
 
 
         $user = Auth::user();
@@ -173,24 +157,24 @@ public function showFinallyResult($studentId)
     } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
-    
 
     }
 
-    
+
+
     public function ShowFeaturedStudents($id)
     {
         try {
             $students = StudentsSubject::whereHas('student', function ($query) use ($id) {
                 $query->whereHas('schoolClassDivision', function ($q) use ($id) {
-                    $q->where('school_class_division_id', $id); 
+                    $q->where('school_class_division_id', $id);
                 });
             })->orderBy('exam_grade', 'desc')
               ->with('student', 'subject', 'session')
               ->get();
         return $this->successResponse($students);
-    } catch (\Exception $ex) {  
-        return $this->errorResponse($ex->getMessage(), 500);    
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
         }
     }
 
