@@ -78,13 +78,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getStudentsInfoForSchool', [SchoolController::class, 'getStudentsInfoForSchool']);//mahmoud
     Route::post('/teachers/store', [TeacherController::class, 'store']);
     Route::post('/SchoolsClassesDivision/store', [SchoolsClassesDivisionController::class, 'store']);
-Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
+    Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
     Route::get('/getSchoolClassesDivisions', [SchoolController::class, 'getSchoolClassesDivisions']);
     Route::post('/getDivisionIdByClassId', [ClassModelController::class, 'getDivisionIdByClassId']);
-    Route::get('/getAttendanceWithUnits', [StudentController::class, 'getAttendanceWithUnits']);//mahmoud
-
-
-
+    Route::get('/buses', [BusDriverController::class, 'getBusDriversBySchool']);
+    Route::post('/student/store', [StudentController::class, 'store']);
+    Route::post('/student/show', [StudentController::class, 'show']);
+    Route::post('/buses/store', [BusDriverController::class, 'store']);
    
 
 
@@ -93,7 +93,7 @@ Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateSt
 
 Route::post('/login', [Authentication::class, 'login']);
 Route::post('/register', [Authentication::class, 'register']);
-Route::get('/getStudentInfo/{id}', [StudentController::class, 'getStudentInfo']);//khalil
+Route::get('/parent', [ParentController::class, 'index']);
 
 
 
@@ -149,7 +149,7 @@ Route::prefix('teachers')->group(function () {
 //Student
 Route::prefix('students')->group(function () {
     Route::get('/{divisionId}', [StudentController::class, 'index']);
-    Route::post('/store/{schoolId}', [StudentController::class, 'store']);
+    //Route::post('/store/{schoolId}', [StudentController::class, 'store']);
     Route::post('/update/{student}', [StudentController::class, 'update']);
     //Route::get('/getStudentInfoForSchool/{studentId}/{schoolId}', [StudentController::class, 'getStudentInfoForSchool']);
     Route::post('/searchStudentByName', [StudentController::class, 'searchStudentByName']);
@@ -197,12 +197,12 @@ Route::prefix('students')->group(function () {
 
 
 //bus
-Route::prefix('buses')->group(function () {
-    Route::get('/{schoolId}', [BusDriverController::class, 'getBusDriversBySchool']);
-    Route::get('/show/{driverId}', [BusDriverController::class, 'getBusDriverBySchoolAndId']);
-    Route::post('/store', [BusDriverController::class, 'store']);
+// Route::prefix('buses')->group(function () {
+//     Route::get('/school', [BusDriverController::class, 'getBusDriversBySchool']);
+//     Route::get('/show/{driverId}', [BusDriverController::class, 'getBusDriverBySchoolAndId']);
+//     Route::post('/store', [BusDriverController::class, 'store']);
 
-    });
+//     });
 
 
 //SchoolsClassesDivision

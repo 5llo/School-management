@@ -150,7 +150,7 @@ public function showFinallyResult($studentId)
     ]);
     $studentSubject->update($data);
 
-    return  $this->successResponse(['message' => 'Grades updated successfully', 'data' => $studentSubject]);
+    return  $this->successResponse($studentSubject);
     } catch (\Exception $ex) {  
         return $this->errorResponse($ex->getMessage(), 500);    
         }
