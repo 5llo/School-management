@@ -73,6 +73,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/getstudent-andoralgrade', [AttendanceController::class, 'updateAttendances']);//this make with us
     Route::post('/setstudentsattendancesandoralgrade', [AttendanceController::class, 'setattendancesandgrade']);//this make with us
     Route::get('/showAllTeacherForSchool', [TeacherController::class, 'index']); //mahmoud
+    Route::get('/getStudentsInfoForSchool', [SchoolController::class, 'getStudentsInfoForSchool']);//mahmoud
+    Route::post('/teachers/store', [TeacherController::class, 'store']);
+    Route::post('/SchoolsClassesDivision/store', [SchoolsClassesDivisionController::class, 'store']);
+    Route::get('/getSchoolClassesDivisions', [SchoolController::class, 'getSchoolClassesDivisions']);
+    Route::post('/getDivisionIdByClassId', [ClassModelController::class, 'getDivisionIdByClassId']);
+    Route::get('/logout', [Authentication::class, 'logout']);
+    Route::get('/buses', [BusDriverController::class, 'getBusDriversBySchool']);
+    Route::post('/student/store', [StudentController::class, 'store']);
+    Route::post('/student/show', [StudentController::class, 'show']);
 
 });
 
@@ -120,7 +129,6 @@ Route::post('/StudentsFoodMeal/store', [StudentsFoodMealController::class, 'stor
 //teacher
 Route::prefix('teachers')->group(function () {
     Route::get('/{schoolId}', [TeacherController::class, 'index']);
-    Route::post('/store', [TeacherController::class, 'store']);
     Route::post('/searchTeacherByName', [TeacherController::class, 'searchTeacherByName']);
     //Route::get('/show/{id}', [TeacherController::class, 'show']);
     Route::post('/update/{teacher}', [TeacherController::class, 'update']);
@@ -131,7 +139,6 @@ Route::prefix('teachers')->group(function () {
 //Student
 Route::prefix('students')->group(function () {
     Route::get('/{divisionId}', [StudentController::class, 'index']);
-    Route::post('/store/{schoolId}', [StudentController::class, 'store']);
     Route::post('/update/{student}', [StudentController::class, 'update']);
     Route::get('/getStudentInfoForSchool/{studentId}/{schoolId}', [StudentController::class, 'getStudentInfoForSchool']);
     Route::post('/searchStudentByName', [StudentController::class, 'searchStudentByName']);
@@ -180,7 +187,6 @@ Route::prefix('students')->group(function () {
 
 //bus
 Route::prefix('buses')->group(function () {
-    Route::get('/{schoolId}', [BusDriverController::class, 'getBusDriversBySchool']);
     Route::get('/show/{driverId}', [BusDriverController::class, 'getBusDriverBySchoolAndId']);
     Route::post('/store', [BusDriverController::class, 'store']);
 
@@ -300,3 +306,6 @@ Route::prefix('conversation')->group(function () {
 
 
 });
+Route::get('/test',function (){
+    return 'hello';}
+);

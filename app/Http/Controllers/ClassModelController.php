@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
+use App\Models\SchoolsClass;
+use App\Models\SchoolsClassesDivision;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
+use Illuminate\Support\Facades\Auth;
 
 class ClassModelController extends Controller
 {
@@ -12,7 +15,36 @@ class ClassModelController extends Controller
      * Display a listing of the resource.
      */
     use GeneralTrait;
+    public function getDivisionIdByClassId(Request $request)
+    {
+        try {
+            $classId = $request->input('class_id');
+            $schoolId = Auth::user()->id;
 
+            $schoolClass = SchoolsClass::where('class_id', $classId)
+                ->where('school_id', $schoolId)
+                ->first();
+
+            if (!$schoolClass) {
+                return $this->errorResponse('Class not found for the given school', 404);
+            }
+
+            $schoolClassDivision = SchoolsClassesDivision::where('school_class_id', $schoolClass->id)->get();
+
+            $divisionsData = [];
+            foreach ($schoolClassDivision as $division) {
+                $divisionData = [
+                    'division_id' => $division->division_id,
+                    'division_name' => $division->division->name, // اسم الشعبة
+                ];
+                $divisionsData[] = $divisionData;
+            }
+
+            return $this->successResponse( $divisionsData);
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
     public function index()
     {
         try{

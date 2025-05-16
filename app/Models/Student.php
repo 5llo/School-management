@@ -54,6 +54,8 @@ class Student extends Model
             'oral_grade',
          //   'homework_grade',
            // 'exam_grade'
+            //'homework_grade_id
+            //slashh
         ]);;
     }
 

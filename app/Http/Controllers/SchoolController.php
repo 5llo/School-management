@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StudentResource;
 use App\Models\School;
 use App\Http\Resources\SchoolResource;
+use App\Models\SchoolsClass;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
 
@@ -15,7 +18,45 @@ class SchoolController extends Controller
      * Display a listing of the resource.
      */
     use GeneralTrait;
+    public function getSchoolClassesDivisions()
+    {
+        try {
 
+            $schoolId = Auth::user()->id;
+            $schoolClasses = SchoolsClass::where('school_id', $schoolId)->get();
+
+            $allSchoolData = [];
+
+            foreach ($schoolClasses as $schoolClass) {
+                $classId = $schoolClass->id;
+                $className = $schoolClass->classsModel->name;
+                $divisionsData = [];
+                foreach ($schoolClass->divisions as $division) {
+                    $divisionId = $division->division->id;
+                    $divisionName = $division->division->name;
+
+                    $divisionData = [
+                        'division_id' => $divisionId,
+                        'division_name' => $divisionName
+                    ];
+
+                    $divisionsData[] = $divisionData;
+                }
+
+                $schoolClassData = [
+                    'class_id' => $classId,
+                    'class_name' => $className,
+                    'divisions' => $divisionsData
+                ];
+
+                $allSchoolData[] = $schoolClassData;
+            }
+            return $this->successResponse($allSchoolData);
+        }
+        catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
     public function index()
     {
         try{
@@ -27,7 +68,7 @@ class SchoolController extends Controller
         }
     }
 
-    
+
 
     /**
      * Show the form for creating a new resource.
@@ -58,22 +99,22 @@ class SchoolController extends Controller
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
-            ], 422); 
+            ], 422);
         }
-    
-        
+
+
         $data = $request->all();
         $data['password'] = bcrypt($data['password']);
-    
-        
+
+
         $School = School::create($data);
-    
+
         return $this->successResponse($School);
     }
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
-    
+
     }
 
     /**
@@ -95,7 +136,7 @@ class SchoolController extends Controller
             return $this->errorResponse($ex->getMessage(), 500);
         }
     }
-    
+
 
 
     public function searchSchoolByName(Request $request)
@@ -116,7 +157,7 @@ class SchoolController extends Controller
         }
     }
 
-    
+
    public function countDivisionsPerClassInSchool($schoolId)
 {
     try{
@@ -162,4 +203,32 @@ class SchoolController extends Controller
     {
         //
     }
+    public function getStudentsInfoForSchool()
+    {
+        try {
+            $school = auth()->user();
+            if ($school) {
+                $teachers = $school->teachers;
+                // return $teachers;
+                $studentsData = [];
+
+                foreach ($teachers as $teacher) {
+                    if ($teacher->division) {
+                        $students = $teacher->division->students;
+
+                        foreach ($students as $student) {
+                            $studentResource = new StudentResource($student);
+                            $studentsData[] = $studentResource;
+                        }
+                    }
+                }
+
+                return $this->successResponse($studentsData);
+            } else {
+                return $this->errorResponse('User not authenticated as a school', 401);
+            }} catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+    }
+
 }

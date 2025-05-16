@@ -9,6 +9,7 @@ use App\Models\School;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Http\Resources\SchoolsClassesDivisiontResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
@@ -24,7 +25,7 @@ class SchoolsClassesDivisionController extends Controller
     public function getWeek_Schedule(Request $request)
 {
     try {
-       
+
         $teacher = $request->user();
 
         if (!$teacher) {
@@ -37,7 +38,7 @@ class SchoolsClassesDivisionController extends Controller
         }
 
         $weekSchedule=new SchoolsClassesDivisiontResource($division);
-     
+
         return $this->successResponse(['week_schedule' => $weekSchedule]);
     } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
@@ -74,7 +75,7 @@ class SchoolsClassesDivisionController extends Controller
     if($students->isNotEmpty()) {
         return $this->successResponse($students);
 
-    } 
+    }
     else {
         return $this->successResponse(['message' => 'No students found in the division with that name']);
     }
@@ -87,7 +88,7 @@ class SchoolsClassesDivisionController extends Controller
 
      public function index()
     {
-       
+
     }
 
     public function create()
@@ -101,23 +102,33 @@ class SchoolsClassesDivisionController extends Controller
     public function store(Request $request)
     {
         try{
-        $validator = Validator::make($request->all(), [
-            'school_class_id' => 'required|exists:schools_classes,id',
-            'division_id' => 'required|exists:divisions,id',
-            'exam_schedule' => 'nullable',
-            'week_schedule' => 'nullable',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422); 
-        }  
-         $data = $request->all();
-        $schoolsClassesDivision = SchoolsClassesDivision::create($data);
-        return $this->successResponse($schoolsClassesDivision);
-    }
+
+            $validator = Validator::make($request->all(), [
+                'class_id' => 'required|exists:classes,id',
+                'division_id' => 'required|exists:divisions,id',
+                'exam_schedule' => 'nullable',
+                'week_schedule' => 'nullable',
+            ]);
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation Error',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $data = $request->all();
+            $school = Auth::user()->id;
+            $schoolClass = SchoolsClass::updateOrCreate(
+                ['school_id' => $school, 'class_id' => $data['class_id']],
+            );
+
+            $schoolsClassesDivision = SchoolsClassesDivision::updateOrCreate(
+                ['school_class_id' =>$schoolClass->id, 'division_id' => $data['division_id']],
+            );
+
+            return $this->successResponse($schoolsClassesDivision);
+        }
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
