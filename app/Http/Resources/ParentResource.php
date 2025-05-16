@@ -18,8 +18,8 @@ class ParentResource extends JsonResource
            
             'name' => $this->name,
             'email' => $this->email,
-            //'password' => $this->password,
-            'location' => $this->location,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'phone' => $this->phone,
         ];
     }

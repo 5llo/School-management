@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Http\Resources\ParentResource;
+
 use App\Http\Resources\StudentInfoResource;
 use App\Http\Resources\StudentMarksResource;
 use App\Models\Student;
@@ -9,6 +12,10 @@ use App\Models\BusDriver;
 use Illuminate\Http\Request;
 use App\Http\Resources\StudentResource;
 use App\Models\Attendance;
+
+use App\Models\SchoolsClass;
+use App\Models\SchoolsClassesDivision;
+
 use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
@@ -29,9 +36,11 @@ class StudentController extends Controller
             // Step 1: Find the student
             $student = Student::find($id);
 
+    
             if (!$student) {
                 return response()->json(['message' => 'Student not found'], 404);
             }
+    
 
             $studentData = new StudentResource($student);
             $marksData=$student->subjects;
@@ -53,12 +62,14 @@ class StudentController extends Controller
                 ? json_decode($attendanceData->attendance_array, true)
                 : $attendanceData->attendance_array;
 
+
             // Step 5: Set date range for the last 6 days
             $start = Carbon::now()->subDays(5)->startOfDay();  // Start from 5 days ago
             $end = Carbon::now()->endOfDay();  // End of today
 
             // Step 6: Initialize an empty array to hold filtered results
             $lastSixDaysAttendance = [];
+
 
             // Step 7: Loop through each date entry in the attendance array
             foreach ($attendanceArray as $attendanceItem) {
@@ -95,6 +106,7 @@ class StudentController extends Controller
     }
 
 
+
 public function getALLStudentInfo()
 {
     try {
@@ -102,6 +114,7 @@ public function getALLStudentInfo()
         $allStudentData = [];
 
         foreach ($students as $student) {
+
             $studentInfo = new StudentInfoResource($student);
 
             $marksData = StudentsSubject::where('student_id', $student->id)
@@ -109,6 +122,7 @@ public function getALLStudentInfo()
                 ->get();
 
             $attendanceMarkValue = 0;
+
             $numberOfPresent = 0;
             $numberOfAbsent = 0;
             $numberOfLate = 0;
@@ -116,13 +130,16 @@ public function getALLStudentInfo()
 
             $attendanceData = Attendance::where('student_id', $student->id)->first();
 
+
             if ($attendanceData && !empty($attendanceData->attendance_array)) {
                 $attendanceArray = is_string($attendanceData->attendance_array)
                     ? json_decode($attendanceData->attendance_array, true)
                     : $attendanceData->attendance_array;
 
+
                 $numerator = 0;
                 $denominator = 0;
+
                 $end = Carbon::now()->endOfDay();
 
                 foreach ($attendanceArray as $item) {
@@ -132,6 +149,7 @@ public function getALLStudentInfo()
                     try {
                         $dateParsed = Carbon::parse($date)->startOfDay();
                         if ($dateParsed <= $end) {
+
                             foreach ($values as $value) {
                                 if (in_array($value, [1, 3, 4])) {
                                     $numerator++;
@@ -171,19 +189,24 @@ public function getALLStudentInfo()
                 $mark->number_of_absent = $numberOfAbsent;
                 $mark->number_of_late = $numberOfLate;
                 $mark->number_of_early_leave = $numberOfEarlyLeave;
+
             });
 
             $studentMarks = StudentMarksResource::collection($marksData);
 
+
             // Last 6 days data
             $lastSixDaysAttendance = [];
+
             if ($attendanceData && !empty($attendanceData->attendance_array)) {
                 $attendanceArray = is_string($attendanceData->attendance_array)
                     ? json_decode($attendanceData->attendance_array, true)
                     : $attendanceData->attendance_array;
 
+
                 $start = Carbon::now()->subDays(7)->startOfDay();
                 $end = Carbon::now()->endOfDay();
+
 
                 foreach ($attendanceArray as $attendanceItem) {
                     $date = key($attendanceItem);
@@ -191,26 +214,31 @@ public function getALLStudentInfo()
 
                     try {
                         $attendanceDate = Carbon::parse($date)->startOfDay();
+
                         if ($attendanceDate->between($start, $end)) {
                             $lastSixDaysAttendance[] = [
                                 'date' => $date,
                                 'attendance_values' => $attendanceValues
                             ];
                         }
+
                     } catch (\Exception $ex) {
                         continue;
                     }
                 }
+
             }
 
             $allStudentData[] = [
                 $studentInfo,
                 $lastSixDaysAttendance,
                 $studentMarks,
+
             ];
         }
 
         return $this->successResponse($allStudentData);
+
     } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
@@ -312,15 +340,17 @@ public function getALLStudentInfo()
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request,$schoolId)
-    {
-        try{
-        $validator = Validator::make($request->all(),[
+    public function store(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
             'parent_id' => 'required|exists:parents,id',
-           'bus_driver_id' => 'nullable|exists:bus_drivers,id',
-            'school_class_division_id' => 'required|exists:schools_classes_division,id',
+            'bus_driver_id' => 'nullable|exists:bus_drivers,id',
+            'class_id' => 'required|integer|exists:classes,id',
+            'division_id' => 'required|integer|exists:schools_classes_division,division_id',
             'name' => 'required',
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -328,22 +358,62 @@ public function getALLStudentInfo()
                 'errors' => $validator->errors()
             ], 422);
         }
-        $schoolId = $request->schoolId;
+
         $data = $request->all();
+        $data['school_id'] = Auth::user()->id;
+
+        $schoolClass = SchoolsClass::where('id', $data['class_id'])
+            ->where('school_id', $data['school_id'])
+            ->first();
+
+        $schoolClassDivision = SchoolsClassesDivision::where('school_class_id', $schoolClass->id)
+            ->where('division_id', $data['division_id'])
+            ->first();
+
+        $data['school_class_division_id'] = $schoolClassDivision->id;
+
         $student = Student::create($data);
-        $studentdata = new StudentResource($student);
-        return $this->successResponse($studentdata, 'created successfull.');
-    } catch (\Exception $ex) {
-        return $this->errorResponse($ex->getMessage(), 500);
+        $studentResource = new StudentResource($student);
+
+        return $this->successResponse($studentResource);
     }
 
     }
+
+}
 
     /**
      * Display the specified resource.
      */
-    public function show(Student $student)
+    public function show(Request $request)
     {
+
+        try {
+             if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $user = Auth::user();
+        $studentId = $request->input('student_id');
+
+        $student = Student::find($studentId);
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student not found.'
+            ], 404);
+        }
+
+        $parent = $student->parent;
+
+        $parentResource = new ParentResource($parent);
+
+     return $this->successResponse($parentResource);
+    }
+    
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
 
     }
 

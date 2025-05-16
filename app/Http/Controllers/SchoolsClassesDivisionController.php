@@ -65,13 +65,17 @@ public function getTopFeaturedStudents(Request $request)
         $topStudents = StudentsSubject::select('student_id')
         ->whereHas('student', function ($query) use ($teacher) {
             $query->whereHas('schoolClassDivision', function ($q) use ($teacher) {
-                $q->where('id', $teacher->division->id);
+
+                $q->where('id', $teacher->division->id); 
+
             });
         })->whereHas('session', function ($query) {
             $query->where('id', 1); // اختيار الفصل بمعرف 1
         })->orderByRaw('MAX(oral_grade) desc')
         ->groupBy('student_id') // تجنب تكرار نفس الطالب
-        ->take(5)
+
+        ->take(5) 
+
         ->get();
 
           return $this->successResponse(topStudentsResource::collection($topStudents));
@@ -152,9 +156,8 @@ public function getTopFeaturedStudents(Request $request)
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
 
-            ], 422);
-        }
-
+            ], 422); 
+        }  
 
          $data = $request->all();
      $school = Auth::user()->id;
