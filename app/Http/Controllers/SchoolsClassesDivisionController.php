@@ -9,10 +9,12 @@ use App\Models\School;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Http\Resources\SchoolsClassesDivisiontResource;
+use App\Http\Resources\topStudentsResource;
+use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
-
+use Illuminate\Support\Facades\Auth;
 
 class SchoolsClassesDivisionController extends Controller
 {
@@ -43,6 +45,42 @@ class SchoolsClassesDivisionController extends Controller
         return $this->errorResponse($ex->getMessage(), 500);
     }
 }
+
+public function getTopFeaturedStudents(Request $request)
+{
+    try {
+
+        $teacher = $request->user();
+
+        if (!$teacher) {
+            return response()->json(['message' => 'Teacher not found'], 404);
+        }
+
+        $division = $teacher->division;
+
+        if (!$division) {
+            return response()->json(['message' => 'Teacher is not assigned to any division'], 403);
+        }
+
+        $topStudents = StudentsSubject::select('student_id')
+        ->whereHas('student', function ($query) use ($teacher) {
+            $query->whereHas('schoolClassDivision', function ($q) use ($teacher) {
+                $q->where('id', $teacher->division->id);
+            });
+        })->whereHas('session', function ($query) {
+            $query->where('id', 1); // اختيار الفصل بمعرف 1
+        })->orderByRaw('MAX(oral_grade) desc')
+        ->groupBy('student_id') // تجنب تكرار نفس الطالب
+        ->take(5)
+        ->get();
+
+          return $this->successResponse(topStudentsResource::collection($topStudents));
+        } catch (\Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 500);
+        }
+}
+
+
 
 
     public function  getSchoolDivisionsDetails($schoolClassId,$divisionId)
@@ -101,8 +139,9 @@ class SchoolsClassesDivisionController extends Controller
     public function store(Request $request)
     {
         try{
+
         $validator = Validator::make($request->all(), [
-            'school_class_id' => 'required|exists:schools_classes,id',
+            'class_id' => 'required|exists:classes,id',
             'division_id' => 'required|exists:divisions,id',
             'exam_schedule' => 'nullable',
             'week_schedule' => 'nullable',
@@ -112,10 +151,21 @@ class SchoolsClassesDivisionController extends Controller
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
+
             ], 422);
         }
+
+
          $data = $request->all();
-        $schoolsClassesDivision = SchoolsClassesDivision::create($data);
+     $school = Auth::user()->id;
+    $schoolClass = SchoolsClass::updateOrCreate(
+    ['school_id' => $school, 'class_id' => $data['class_id']],
+);
+
+         $schoolsClassesDivision = SchoolsClassesDivision::updateOrCreate(
+    ['school_class_id' =>$schoolClass->id, 'division_id' => $data['division_id']],
+);
+
         return $this->successResponse($schoolsClassesDivision);
     }
         catch (\Exception $ex) {

@@ -46,6 +46,13 @@ class StudentTeacherResource extends JsonResource
             'studentId' => $this->id,
             'oralGrade' => $this->subjects->where("name", $this->extraData['info'])->first()->pivot->oral_grade,
             'attendanceStatus' => $attendanceStatus,
+
+          //  'req'=>  $this->selectedmaterial
+           'name' => $this->name,
+           'student_id' => $this->id,
+           'oralGrade' => $this->subjects->where("name",$this->extraData['info'])->first()->pivot->oral_grade,
+
+
         ];
     }
 

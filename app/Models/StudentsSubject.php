@@ -15,7 +15,6 @@ class StudentsSubject extends Model
         'student_id',
         'subject_id',
         'session_id',
-        'attendance_array',
         'oral_grade',
         'homework_grade',
         'exam_grade'
