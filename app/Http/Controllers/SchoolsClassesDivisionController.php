@@ -26,7 +26,7 @@ class SchoolsClassesDivisionController extends Controller
     public function getWeek_Schedule(Request $request)
 {
     try {
-       
+
         $teacher = $request->user();
 
         if (!$teacher) {
@@ -39,8 +39,8 @@ class SchoolsClassesDivisionController extends Controller
         }
 
         $weekSchedule=new SchoolsClassesDivisiontResource($division);
-     
-        return $this->successResponse(['week_schedule' => $weekSchedule]);
+
+        return $this->successResponse( $weekSchedule);
     } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
@@ -65,13 +65,17 @@ public function getTopFeaturedStudents(Request $request)
         $topStudents = StudentsSubject::select('student_id')
         ->whereHas('student', function ($query) use ($teacher) {
             $query->whereHas('schoolClassDivision', function ($q) use ($teacher) {
+
                 $q->where('id', $teacher->division->id); 
+
             });
         })->whereHas('session', function ($query) {
             $query->where('id', 1); // اختيار الفصل بمعرف 1
         })->orderByRaw('MAX(oral_grade) desc')
         ->groupBy('student_id') // تجنب تكرار نفس الطالب
+
         ->take(5) 
+
         ->get();
 
           return $this->successResponse(topStudentsResource::collection($topStudents));
@@ -112,7 +116,7 @@ public function getTopFeaturedStudents(Request $request)
     if($students->isNotEmpty()) {
         return $this->successResponse($students);
 
-    } 
+    }
     else {
         return $this->successResponse(['message' => 'No students found in the division with that name']);
     }
@@ -125,7 +129,7 @@ public function getTopFeaturedStudents(Request $request)
 
      public function index()
     {
-       
+
     }
 
     public function create()
@@ -151,9 +155,10 @@ public function getTopFeaturedStudents(Request $request)
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
+
             ], 422); 
         }  
-       
+
          $data = $request->all();
      $school = Auth::user()->id;
     $schoolClass = SchoolsClass::updateOrCreate(

@@ -115,10 +115,26 @@ public function showFinallyResult($studentId)
      */
     public function updateStudentGrades(Request $request)
 {
-     try {
+
+    try {
+        
+
         if (!Auth::check()) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
+        $user = Auth::user();
+    $validator = Validator::make($request->all(), [
+        'student_id' => 'required|exists:students,id',
+        'subject_id' => 'required|exists:subjects,id',
+        'oral_grade' => 'required|numeric|between:0,20',
+        'homework_grade' => 'required|numeric|between:0,20',
+        'exam_grade' => 'required|numeric|between:0,50',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['message' => $validator->errors()], 422);
+    }
+
 
         $user = Auth::user();
 
@@ -158,6 +174,7 @@ public function showFinallyResult($studentId)
         return $this->errorResponse($ex->getMessage(), 500);
     }
     
+
     }
 
     

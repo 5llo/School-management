@@ -21,9 +21,13 @@ class StudentMarksResource extends JsonResource
             'homework_grade' => $this->homework_grade,
             'exam_grade' => $this->exam_grade,
             'attendance_grade' => $this['attendance_grade'] ?? null,
-            //ttendance_Marks'=>$this->extraData['attendanceMarks']->first(),
 
-            
+            'number_of_present' => $this['number_of_present'] ?? null,
+            'number_of_absent' => $this['number_of_absent'] ?? null,
+             'numberofearlyleave' => $this->number_of_late ?? 0,
+        'numberoflate' => $this->number_of_early_leave ?? 0,
+
+
         ];
     }
 }

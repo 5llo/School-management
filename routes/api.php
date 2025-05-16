@@ -78,6 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getStudentsInfoForSchool', [SchoolController::class, 'getStudentsInfoForSchool']);//mahmoud
     Route::post('/teachers/store', [TeacherController::class, 'store']);
     Route::post('/SchoolsClassesDivision/store', [SchoolsClassesDivisionController::class, 'store']);
+
     Route::post('/updateStudentGrades', [StudentsSubjectController::class, 'updateStudentGrades']);//khalil
     Route::get('/getSchoolClassesDivisions', [SchoolController::class, 'getSchoolClassesDivisions']);
     Route::post('/getDivisionIdByClassId', [ClassModelController::class, 'getDivisionIdByClassId']);
@@ -85,6 +86,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/student/store', [StudentController::class, 'store']);
     Route::post('/student/show', [StudentController::class, 'show']);
     Route::post('/buses/store', [BusDriverController::class, 'store']);
+
    
 
 
@@ -93,7 +95,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/login', [Authentication::class, 'login']);
 Route::post('/register', [Authentication::class, 'register']);
+
 Route::get('/parent', [ParentController::class, 'index']);
+
 
 
 

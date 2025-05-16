@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Attendance;
 
 class Student extends Model
 {
@@ -19,6 +20,10 @@ class Student extends Model
     public function parent()
     {
         return $this->belongsTo(ParentModel::class);
+    }
+    public function attendance()
+    {
+        return $this->hasOne(Attendance::class);
     }
 
     public function schoolClassDivision()
