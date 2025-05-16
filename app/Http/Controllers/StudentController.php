@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ParentResource;
 use App\Http\Resources\StudentInfoResource;
 use App\Http\Resources\StudentMarksResource;
 use App\Models\Student;
@@ -9,6 +10,8 @@ use App\Models\BusDriver;
 use Illuminate\Http\Request;
 use App\Http\Resources\StudentResource;
 use App\Models\Attendance;
+use App\Models\SchoolsClass;
+use App\Models\SchoolsClassesDivision;
 use App\Models\StudentsSubject;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
@@ -305,39 +308,81 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request,$schoolId)
-    {
-        try{
-        $validator = Validator::make($request->all(),[
+    public function store(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
             'parent_id' => 'required|exists:parents,id',
-           'bus_driver_id' => 'nullable|exists:bus_drivers,id',
-            'school_class_division_id' => 'required|exists:schools_classes_division,id',
+            'bus_driver_id' => 'nullable|exists:bus_drivers,id',
+            'class_id' => 'required|integer|exists:classes,id',
+            'division_id' => 'required|integer|exists:schools_classes_division,division_id',
             'name' => 'required',
         ]);
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
-            ], 422); 
+            ], 422);
         }
-        $schoolId = $request->schoolId;
+
         $data = $request->all();
+        $data['school_id'] = Auth::user()->id;
+
+        $schoolClass = SchoolsClass::where('id', $data['class_id'])
+            ->where('school_id', $data['school_id'])
+            ->first();
+
+        $schoolClassDivision = SchoolsClassesDivision::where('school_class_id', $schoolClass->id)
+            ->where('division_id', $data['division_id'])
+            ->first();
+
+        $data['school_class_division_id'] = $schoolClassDivision->id;
+
         $student = Student::create($data);
-        $studentdata = new StudentResource($student);
-        return $this->successResponse($studentdata, 'created successfull.');
-    } catch (\Exception $ex) {
-        return $this->errorResponse($ex->getMessage(), 500);
+        $studentResource = new StudentResource($student);
+
+        return $this->successResponse($studentResource);
     }
     
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
     }
+
+}
 
     /**
      * Display the specified resource.
      */
-    public function show(Student $student)
+    public function show(Request $request)
     {
-        
+        try {
+             if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $user = Auth::user();
+        $studentId = $request->input('student_id');
+
+        $student = Student::find($studentId);
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student not found.'
+            ], 404);
+        }
+
+        $parent = $student->parent;
+
+        $parentResource = new ParentResource($parent);
+
+     return $this->successResponse($parentResource);
+    }
+    
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
     }
 
     /**

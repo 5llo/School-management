@@ -115,45 +115,49 @@ public function showFinallyResult($studentId)
      */
     public function updateStudentGrades(Request $request)
 {
-    try {
-        
+     try {
         if (!Auth::check()) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
+
         $user = Auth::user();
-    $validator = Validator::make($request->all(), [
-        'student_id' => 'required|exists:students,id',
-        'subject_id' => 'required|exists:subjects,id',
-        'oral_grade' => 'required|numeric|between:0,20',
-        'homework_grade' => 'required|numeric|between:0,20',
-        'exam_grade' => 'required|numeric|between:0,50',
-    ]);
 
-    if ($validator->fails()) {
-        return response()->json(['message' => $validator->errors()], 422);
-    }
+        $validator = Validator::make($request->all(), [
+            'student_id' => 'required|exists:students,id',
+            'materials' => 'required|array',
+            'materials.*.subject_id' => 'required|exists:subjects,id',
+            'materials.*.oralgrade' => 'required|numeric|between:0,20',
+            'materials.*.homeworkgrade' => 'required|numeric|between:0,20',
+            'materials.*.examgrade' => 'required|numeric|between:0,50',
+        ]);
 
-    $data = $request->only(['student_id', 'subject_id', 'oral_grade', 'homework_grade', 'exam_grade']);
-
-    $studentSubject = StudentsSubject::where('student_id', $data['student_id'])
-        ->where('subject_id', $data['subject_id'])
-        ->first();
-
-    if (!$studentSubject) {
-        return response()->json(['message' => 'Student subject not found'], 404);
-    }
-
-    $studentSubject->update([
-        'oral_grade' => $data['oral_grade'],
-        'homework_grade' => $data['homework_grade'],
-        'exam_grade' => $data['exam_grade'],
-    ]);
-    $studentSubject->update($data);
-
-    return  $this->successResponse(['message' => 'Grades updated successfully', 'data' => $studentSubject]);
-    } catch (\Exception $ex) {  
-        return $this->errorResponse($ex->getMessage(), 500);    
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], 422);
         }
+
+        $data = $request->only(['student_id', 'materials']);
+
+        foreach ($data['materials'] as $material) {
+            $studentSubject = StudentsSubject::where('student_id', $data['student_id'])
+                ->where('subject_id', $material['subject_id'])
+                ->first();
+
+            if (!$studentSubject) {
+                return response()->json(['message' => 'Student subject not found'], 404);
+            }
+
+            $studentSubject->update([
+                'oral_grade' => $material['oralgrade'],
+                'homework_grade' => $material['homeworkgrade'],
+                'exam_grade' => $material['examgrade'],
+            ]);
+        }
+
+        return $this->successResponse([],'successfull.');
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+    
     }
 
     
