@@ -19,6 +19,7 @@ class StudentResource extends JsonResource
         return [
            'id'=>$this->id,
             'name' => $this->name,
+            'email' => $this->parent->email,
             'parent_name' => $this->parent->name,
             'parent_phone' => $this->parent->phone,
            'Driver_bus' => $this->busDriver ? $this->busDriver->name : null,
