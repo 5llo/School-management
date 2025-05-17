@@ -86,6 +86,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/student/store', [StudentController::class, 'store']);
     Route::post('/student/show', [StudentController::class, 'show']);
     Route::post('/buses/store', [BusDriverController::class, 'store']);
+    Route::post('/updateGradesForDivision', [StudentsSubjectController::class, 'updateGradesForDivision']);//khalil
+
 
    
 

@@ -161,6 +161,70 @@ public function showFinallyResult($studentId)
     }
 
 
+    public function updateGradesForDivision(Request $request)
+{
+   try {
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $user = Auth::user();
+
+        $validator = Validator::make($request->all(), [
+            '*.student_id' => 'required|exists:students,id',
+            '*.material' => 'required|array',
+            '*.material.*.subject_id' => 'required|exists:subjects,id',
+            '*.material.*.oral_grade' => 'required|numeric|between:0,20',
+            '*.material.*.homework_grade' => 'required|numeric|between:0,20',
+            '*.material.*.exam_grade' => 'required|numeric|between:0,50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()], 422);
+        }
+
+        $data = $request->collect(); 
+
+        // جيب جميع الطلاب من شعبة المعلم
+        $allowedStudentIds = $user->division->students->pluck('id')->toArray();
+
+        foreach ($data as $studentData) {
+            $studentId = $studentData['student_id'];
+            $materials = $studentData['material'];
+
+            // التأكد أن الطالب موجود في شعبة المعلم
+            if (!in_array($studentId, $allowedStudentIds)) {
+                return response()->json([
+                    'message' => "Unauthorized to update grades for student ID {$studentId}"
+                ], 403);
+            }
+
+            foreach ($materials as $material) {
+                $studentSubject = StudentsSubject::where('student_id', $studentId)
+                    ->where('subject_id', $material['subject_id'])
+                    ->first();
+
+                if (!$studentSubject) {
+                    return response()->json([
+                        'message' => "Student subject not found for student {$studentId} and subject {$material['subject_id']}"
+                    ], 404);
+                }
+
+                // تحديث العلامات
+                $studentSubject->update([
+                    'oral_grade' => $material['oral_grade'],
+                    'homework_grade' => $material['homework_grade'],
+                    'exam_grade' => $material['exam_grade'],
+                ]);
+            }
+        }
+      
+        return $this->successResponse([],'successfull.');
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+
+    }
 
     public function ShowFeaturedStudents($id)
     {
