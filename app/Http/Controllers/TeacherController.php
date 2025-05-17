@@ -28,7 +28,7 @@ class TeacherController extends Controller
                 return response()->json(['message' => 'School not found'], 404);
             }
             $teachers = $school->teachers;
-    
+
         return $this->successResponse(TeacherResource::collection($teachers));
     }
         catch (\Exception $ex) {
@@ -54,21 +54,21 @@ class TeacherController extends Controller
         try{
             $name = $request->input('name');
         $teacher = Teacher::where('name', 'like', '%'.$name.'%')->first();
-    
+
         if($teacher) {
             $teacherData=new TeacherResource($teacher);
             return $this->successResponse($teacherData);
-           
-        } 
+
+        }
         else {
-           
+
                 return  $this->successResponse(['message' => 'Teacher not found']);
              }
     }
         catch (\Exception $ex) {
             return $this->errorResponse($ex->getMessage(), 500);
         }
-        
+
     }
     /**
      * Show the form for creating a new resource.
@@ -98,19 +98,19 @@ class TeacherController extends Controller
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
-            ], 422); 
+            ], 422);
         }
         $data = $request->all();
         $data['school_id'] = Auth::user()->id;
-        $data['password'] = bcrypt($data['password']);
+        $data['password'] = $data['password'];
         $schoolClass = SchoolsClass::where('id', $data['class_id'])
             ->where('school_id', $data['school_id'])
             ->first();
-       
+
          $schoolClassDivision = SchoolsClassesDivision::where('school_class_id', $schoolClass->id)
             ->where('division_id', $data['division_id'])
             ->first();
-        
+
  $teacherData = [
             'phone' => $data['phone'],
             'gender' => $data['gender'],
@@ -126,7 +126,7 @@ class TeacherController extends Controller
     } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
-        
+
     }
 
     /**
@@ -165,7 +165,7 @@ class TeacherController extends Controller
     //         return response()->json(['message' => 'Teacher not found'], 404);
     //     }
 
-       
+
     //         $validator = Validator::make($request->all(),[
     //             //'school_id' => 'required|integer|exists:schools,id',
     //             'schools_classes_division_id' => 'required|integer|exists:schools_classes_division,id',
@@ -180,7 +180,7 @@ class TeacherController extends Controller
     //                 'success' => false,
     //                 'message' => 'Validation Error',
     //                 'errors' => $validator->errors()
-    //             ], 422); 
+    //             ], 422);
     //         }
     //     $data['password'] = bcrypt($data['password']);
     //         $data = $request->all();
@@ -189,10 +189,10 @@ class TeacherController extends Controller
     //     } catch (\Exception $ex) {
     //         return $this->errorResponse($ex->getMessage(), 500);
     //     }
-            
+
     //     }
-    
-    
+
+
 
     /**
      * Remove the specified resource from storage.
