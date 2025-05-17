@@ -19,6 +19,7 @@ class BusResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'school_id' => $this->school->name,
+            'bus_number'=>$this->bus_number,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'phone' => $this->phone,
