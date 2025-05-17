@@ -88,7 +88,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/buses/store', [BusDriverController::class, 'store']);
     Route::post('/updateGradesForDivision', [StudentsSubjectController::class, 'updateGradesForDivision']);//khalil
 
+Route::get('/FoodMeal', [FoodMealController::class, 'index']);
+Route::post('/FoodMeal/store', [FoodMealController::class, 'store']);
 
+ Route::get('/teacher/homeworks', [HomeworkController::class, 'index']);
+ Route::post('/homeworks', [HomeworkController::class,'store']);
    
 
 
@@ -98,8 +102,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::post('/login', [Authentication::class, 'login']);
 Route::post('/register', [Authentication::class, 'register']);
 
-Route::get('/parent', [ParentController::class, 'index']);
-
+    Route::get('/parent', [ParentController::class, 'index']);
+    Route::get('/FoodMeal/show', [FoodMealController::class, 'show']);
+    Route::get('/getStudentCountForFoodMeal', [FoodMealController::class, 'getStudentCountForFoodMeal']);
 
 
 
@@ -127,14 +132,6 @@ Route::post('/searchParentByEmail', [ParentController::class, 'searchParentByEma
 
 
 
-//foodMeal
-Route::prefix('food-meals')->group(function () {
-    Route::get('/{schoolId}', [FoodMealController::class, 'index']);
-    Route::post('/store', [FoodMealController::class, 'store']);
-    Route::get('/show/{id}', [FoodMealController::class, 'show']);
-    Route::get('/getStudentCountForFoodMeal/{foodMealId}', [FoodMealController::class, 'getStudentCountForFoodMeal']);
-
-});
 
 //StudentsFoodMeal
 Route::get('/StudentsFoodMeal/{studentId}', [StudentsFoodMealController::class, 'studentFoodMeals']);
@@ -190,8 +187,7 @@ Route::prefix('students')->group(function () {
         Route::get('/orderContestParticipants/{contestId}', [ContestsStudentController::class, 'orderContestParticipants']);
 
 //homework//
-        Route::get('/teacher/{teacherId}/homeworks', [HomeworkController::class, 'index']);//
-        Route::post('/homeworks', [HomeworkController::class,'store']);
+       
         Route::get('/homework/getHomeWorkWForDivision/{divisionId}', [HomeworkController::class, 'getHomeWorkWForDivision']);
 
 

@@ -8,6 +8,7 @@ use App\Models\Teacher;
 use App\Models\SchoolsClassesDivision;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\GeneralTrait;
+use Illuminate\Support\Facades\Auth;
 
 class HomeworkController extends Controller
 {
@@ -17,9 +18,10 @@ class HomeworkController extends Controller
     use GeneralTrait;
 
 
-     public function index($teacherId)
+     public function index()
      {
         try{
+            $teacherId= Auth::user()->id;
          $homeworks = Homework::where('teacher_id', $teacherId)->get();
          return $this->successResponse($homeworks);
         } 
@@ -44,9 +46,9 @@ class HomeworkController extends Controller
     {
         try{
         $validator = Validator::make($request->all(), [
-           'teacher_id' => 'required|exists:teachers,id',
+           //'teacher_id' => 'required|exists:teachers,id',
             'description' => 'required',
-            'file' => 'required',
+            //'file' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -55,6 +57,12 @@ class HomeworkController extends Controller
             ], 422);
         }
         $data = $request->all();
+        $data['teacher_id'] = Auth::user()->id;
+        $fileNmae = time().'.'.$request->file->getClientOriginalExtension();
+        $file_path = base_path('./');
+        $filee =  $request->file->move('public/homework', $fileNmae);
+         $myfile='homework/'. $fileNmae;
+         $data['file']=$myfile;
         $homework = Homework::create($data);
         return $this->successResponse($homework);
     } 

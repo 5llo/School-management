@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\FoodMealResource;
 use App\Traits\GeneralTrait;
-
+use Illuminate\Support\Facades\Auth;
 
 class FoodMealController extends Controller
 {
@@ -18,9 +18,10 @@ class FoodMealController extends Controller
      */
     use GeneralTrait;
 
-    public function index($schoolId)
+    public function index()
     {
         try{
+          $schoolId  = Auth::user()->id;
         $foodMeals = FoodMeal::where('school_id', $schoolId)->get();
         return $this->successResponse(FoodMealResource::collection($foodMeals));
     } 
@@ -45,12 +46,12 @@ class FoodMealController extends Controller
     {
         try {
         $validator = Validator::make($request->all(), [
-            'school_id' => 'required|exists:schools,id',
+            //'school_id' => 'required|exists:schools,id',
             'name' => 'required|string|max:255',
             'contents' => 'nullable|string',
             'entrees' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-          //  'day' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday', 
+            'day' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday', 
         ]);
 
         
@@ -62,7 +63,7 @@ class FoodMealController extends Controller
             ], 422); 
         }  
          $data = $request->all();
-      
+        $data['school_id'] = Auth::user()->id;
         $foodMeal = FoodMeal::create($data);
 
         $foodmeal= new FoodMealResource($foodMeal);
@@ -78,35 +79,36 @@ class FoodMealController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
-    {
-        try{
+    public function show(Request $request)
+{
+    try {
+        $id = $request->get('id');
+
         $foodMeal = FoodMeal::find($id);
 
         if (!$foodMeal) {
             return response()->json(['message' => 'Food Meal not found'], 404);
         }
 
-        $foodmeal= new FoodMealResource($foodMeal);
+        $foodmeal = new FoodMealResource($foodMeal);
         return $this->successResponse($foodmeal);
-    } 
-    catch (\Exception $ex) {
+    } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
-
-    }
+}
     
 
-    public function getStudentCountForFoodMeal($foodMealId)
+    public function getStudentCountForFoodMeal(Request $request)
 {
     try {
+        $foodMealId = $request->get('foodMealId');
+        
         $foodMeal = FoodMeal::findOrFail($foodMealId);
-        $foodMealName = $foodMeal->name;
+        $foodMealDay = $foodMeal->day;
         $studentCount = $foodMeal->students->count();
 
-        return $this->successResponse($foodMealName,$studentCount);
-    } 
-    catch (\Exception $ex) {
+        return $this->successResponse($foodMealDay, $studentCount);
+    } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
 }
