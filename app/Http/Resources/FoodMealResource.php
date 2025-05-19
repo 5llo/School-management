@@ -20,7 +20,7 @@ class FoodMealResource extends JsonResource
             'contents' => $this->contents,
             'entrees' => $this->entrees,
             'price' => $this->price,
-            
+            'day'=>$this->day,
         ];
     }
 }
