@@ -21,6 +21,7 @@ class StudentResource extends JsonResource
             'name' => $this->name,
             'parent_name' => $this->parent->name,
             'parent_phone' => $this->parent->phone,
+            'email'=>$this->parent->email,
            'Driver_bus' => $this->busDriver ? $this->busDriver->name : null,
             //'teacher_name' => $this->schoolClassDivision->teachers[0]->name,
              'school_name' => $this->schoolClassDivision->class->school->name,
