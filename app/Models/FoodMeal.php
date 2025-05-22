@@ -15,7 +15,8 @@ class FoodMeal extends Model
         'contents',
         'price',
         'entrees',
-        'day'
+        'day',
+        'Food'
     ];
 
     public function school()

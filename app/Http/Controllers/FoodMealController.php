@@ -8,6 +8,7 @@ use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\FoodMealResource;
+use App\Models\StudentsFoodMeal;
 use App\Traits\GeneralTrait;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,38 +43,38 @@ class FoodMealController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        try {
-        $validator = Validator::make($request->all(), [
-            //'school_id' => 'required|exists:schools,id',
-            'name' => 'required|string|max:255',
-            'contents' => 'nullable|string',
-            'entrees' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'day' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday', 
-        ]);
+    // public function store(Request $request)
+    // {
+    //     try {
+    //     $validator = Validator::make($request->all(), [
+    //         //'school_id' => 'required|exists:schools,id',
+    //         'name' => 'required|string|max:255',
+    //         'contents' => 'nullable|string',
+    //         'entrees' => 'nullable|string',
+    //         'price' => 'required|numeric|min:0',
+    //         'day' => 'required|in:Sunday,Monday,Tuesday,Wednesday,Thursday', 
+    //     ]);
 
         
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error',
-                'errors' => $validator->errors()
-            ], 422); 
-        }  
-         $data = $request->all();
-        $data['school_id'] = Auth::user()->id;
-        $foodMeal = FoodMeal::create($data);
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Validation Error',
+    //             'errors' => $validator->errors()
+    //         ], 422); 
+    //     }  
+    //      $data = $request->all();
+    //     $data['school_id'] = Auth::user()->id;
+    //     $foodMeal = FoodMeal::create($data);
 
-        $foodmeal= new FoodMealResource($foodMeal);
-        return $this->successResponse($foodmeal);
-    } 
-    catch (\Exception $ex) {
-        return $this->errorResponse($ex->getMessage(), 500);
-    }
+    //     $foodmeal= new FoodMealResource($foodMeal);
+    //     return $this->successResponse($foodmeal);
+    // } 
+    // catch (\Exception $ex) {
+    //     return $this->errorResponse($ex->getMessage(), 500);
+    // }
 
-    }
+    // }
     
 
     /**
@@ -101,13 +102,21 @@ class FoodMealController extends Controller
     public function getStudentCountForFoodMeal(Request $request)
 {
     try {
-        $foodMealId = $request->get('foodMealId');
+    
+         $schoolId  = Auth::user()->id;
+        $foodMeals = FoodMeal::where('school_id', $schoolId)->get();
         
-        $foodMeal = FoodMeal::findOrFail($foodMealId);
-        $foodMealDay = $foodMeal->day;
-        $studentCount = $foodMeal->students->count();
-
-        return $this->successResponse($foodMealDay, $studentCount);
+        $reservationsCount = [];
+        
+        foreach ($foodMeals as $foodMeal) {
+            $activeReservationsCount = $foodMeal->students()
+                ->wherePivot('status', 'active')
+                ->count();
+            
+            $reservationsCount[$foodMeal->name] = $activeReservationsCount;
+        }
+      
+        return $this->successResponse($reservationsCount);
     } catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
@@ -123,9 +132,39 @@ class FoodMealController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, FoodMeal $foodMeal)
+    public function update(Request $request)
     {
-        //
+        try {
+        $validator = Validator::make($request->all(), [
+            'id'=>'required|exists:food_meals,id',
+            'name' => 'required|string|max:255',
+            'contents' => 'nullable|string',
+            'entrees' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'day' => 'required|date',
+            'Food'=>'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }  
+         $data = $request->all();
+        $foodMeal = FoodMeal::findOrFail( $data['id']);
+        $data['school_id'] = Auth::user()->id;
+
+         StudentsFoodMeal::where('food_meal_id', $foodMeal->id)->delete();
+
+        $foodMeal->update($data);
+
+        return $this->successResponse([],'update done');
+    } 
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
     }
 
     /**

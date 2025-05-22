@@ -16,11 +16,12 @@ class FoodMealResource extends JsonResource
     {
         return [
            'school_name' => $this->school->name,
-            'Food_name' => $this->name,
+           'day_name' => $this->name,
+            'Food_name' => $this->Food,
             'contents' => $this->contents,
             'entrees' => $this->entrees,
             'price' => $this->price,
-            'day'=>$this->day,
+            'date'=>$this->day,
         ];
     }
 }
