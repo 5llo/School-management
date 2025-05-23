@@ -37,23 +37,27 @@ class StudentsFoodMealController extends Controller
                     ->first();
 
                if ($studentFoodMeal) {
-                    $studentName = $student->name; 
-
+                    $studentName = $student->name;
+                    $foodid=$studentFoodMeal["food_meal_id"];
+                     $price=FoodMeal::where('id',$foodid)->first()->price;
+                     $dayname=FoodMeal::where('id',$foodid)->first()->name;
                     $studentsFoodMeals[] = [
                         'student_name' => $studentName,
-                        'student_food_meal' => $studentFoodMeal
+                        'student_food_meal' => $studentFoodMeal,
+                        'price'=>$price,
+                        'dayname'=>$dayname
                     ];
                 }
             }
         }
 
         return $this->successResponse($studentsFoodMeals);
-    } 
+    }
     catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
     }
-    
+
 
     public function studentFoodMeals($studentId)
     {
@@ -64,7 +68,7 @@ class StudentsFoodMealController extends Controller
             return response()->json(['message' => 'No food meals found for the student'], 404);
         }
         return $this->successResponse( studentFoodMealResource::collection($studentFoodMeals));
-    } 
+    }
     catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
@@ -96,8 +100,8 @@ class StudentsFoodMealController extends Controller
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
-            ], 422); 
-        }  
+            ], 422);
+        }
          $data = $request->all();
         $studentsFoodMeal = StudentsFoodMeal::create($data);
         $studentFood= new studentFoodMealResource($studentsFoodMeal);
@@ -107,15 +111,15 @@ class StudentsFoodMealController extends Controller
     }
 
 
-    
-    
+
+
     }
 
 
     public function acceptOrRejectRequestFoodMeal(Request $request)
 {
     try {
-        
+
          $schoolId  = Auth::user()->id;
         $recordId = $request->input('record_id');
         $action = $request->input('action');
