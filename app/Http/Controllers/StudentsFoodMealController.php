@@ -11,6 +11,7 @@ use App\Http\Resources\FoodMealResource;
 use App\Traits\GeneralTrait;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StudentsFoodMealController extends Controller
 {
@@ -18,6 +19,45 @@ class StudentsFoodMealController extends Controller
      * Display a listing of the resource.
      */
     use GeneralTrait;
+
+    public function index()
+    {
+        try{
+          $schoolId = Auth::user()->id;
+        $foodMeals = FoodMeal::where('school_id', $schoolId)->get();
+
+        $studentsFoodMeals = [];
+
+        foreach ($foodMeals as $foodMeal) {
+            $foodMealStudents = $foodMeal->students;
+
+            foreach ($foodMealStudents as $student) {
+                $studentFoodMeal = StudentsFoodMeal::where('student_id', $student->id)
+                    ->where('food_meal_id', $foodMeal->id)
+                    ->first();
+
+               if ($studentFoodMeal) {
+                    $studentName = $student->name;
+                    $foodid=$studentFoodMeal["food_meal_id"];
+                     $price=FoodMeal::where('id',$foodid)->first()->price;
+                     $dayname=FoodMeal::where('id',$foodid)->first()->name;
+                    $studentsFoodMeals[] = [
+                        'student_name' => $studentName,
+                        'student_food_meal' => $studentFoodMeal,
+                        'price'=>$price,
+                        'dayname'=>$dayname
+                    ];
+                }
+            }
+        }
+
+        return $this->successResponse($studentsFoodMeals);
+    }
+    catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+    }
+
 
     public function studentFoodMeals($studentId)
     {
@@ -28,7 +68,7 @@ class StudentsFoodMealController extends Controller
             return response()->json(['message' => 'No food meals found for the student'], 404);
         }
         return $this->successResponse( studentFoodMealResource::collection($studentFoodMeals));
-    } 
+    }
     catch (\Exception $ex) {
         return $this->errorResponse($ex->getMessage(), 500);
     }
@@ -60,8 +100,8 @@ class StudentsFoodMealController extends Controller
                 'success' => false,
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
-            ], 422); 
-        }  
+            ], 422);
+        }
          $data = $request->all();
         $studentsFoodMeal = StudentsFoodMeal::create($data);
         $studentFood= new studentFoodMealResource($studentsFoodMeal);
@@ -71,9 +111,42 @@ class StudentsFoodMealController extends Controller
     }
 
 
-    
-    
+
+
     }
+
+
+    public function acceptOrRejectRequestFoodMeal(Request $request)
+{
+    try {
+
+         $schoolId  = Auth::user()->id;
+        $recordId = $request->input('record_id');
+        $action = $request->input('action');
+      //dd($recordId);
+        $record = StudentsFoodMeal::find($recordId);
+
+        if (!$record) {
+            return response()->json(['message' => 'Record not found'], 404);
+        }
+
+        if ($action === '0') {
+            $record->status = 'active';
+        } elseif ($action === '1') {
+            $record->status = 'inactive';
+        } elseif ($action === '2') {
+            $record->status = 'suspended';
+        } else {
+            return response()->json(['message' => 'Invalid action'], 400);
+        }
+
+        $record->save();
+
+        return $this->successResponse(new studentFoodMealResource($record));
+    } catch (\Exception $ex) {
+        return $this->errorResponse($ex->getMessage(), 500);
+    }
+}
 
     /**
      * Display the specified resource.

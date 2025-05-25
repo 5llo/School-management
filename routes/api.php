@@ -89,7 +89,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/updateGradesForDivision', [StudentsSubjectController::class, 'updateGradesForDivision']);//khalil
 
 Route::get('/FoodMeal', [FoodMealController::class, 'index']);
-Route::post('/FoodMeal/store', [FoodMealController::class, 'store']);
+Route::post('/FoodMeal/update', [FoodMealController::class, 'update']);
+Route::get('/getStudentCountForFoodMeal', [FoodMealController::class, 'getStudentCountForFoodMeal']);
+Route::get('/StudentFoodMeal/index', [StudentsFoodMealController::class, 'index']);
+Route::post('/acceptOrRejectRequestFoodMeal', [StudentsFoodMealController::class, 'acceptOrRejectRequestFoodMeal']);
+
 
  Route::get('/teacher/homeworks', [HomeworkController::class, 'index']);
  Route::post('/homeworks', [HomeworkController::class,'store']);
@@ -104,7 +108,7 @@ Route::post('/register', [Authentication::class, 'register']);
 
     Route::get('/parent', [ParentController::class, 'index']);
     Route::get('/FoodMeal/show', [FoodMealController::class, 'show']);
-    Route::get('/getStudentCountForFoodMeal', [FoodMealController::class, 'getStudentCountForFoodMeal']);
+    
 
 
 
