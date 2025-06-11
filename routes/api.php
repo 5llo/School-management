@@ -97,9 +97,13 @@ Route::post('/acceptOrRejectRequestFoodMeal', [StudentsFoodMealController::class
 
  Route::get('/teacher/homeworks', [HomeworkController::class, 'index']);
  Route::post('/homeworks', [HomeworkController::class,'store']);
-   
+ Route::post('/getweekpagedetalisforschool', [SchoolsClassesDivisionController::class,'getweekpagedetalisforschool']);
 
+ Route::post('/storeweekschedule', [SchoolsClassesDivisionController::class,'storeweekschedule']);
 
+    Route::post('/getExampagedetalisforschool', [SchoolsClassesDivisionController::class,'getExampagedetalisforschool']);
+
+    Route::post('/storeExamschedule', [SchoolsClassesDivisionController::class,'storeExamschedule']);
 
 });
 
@@ -108,7 +112,7 @@ Route::post('/register', [Authentication::class, 'register']);
 
     Route::get('/parent', [ParentController::class, 'index']);
     Route::get('/FoodMeal/show', [FoodMealController::class, 'show']);
-    
+
 
 
 
@@ -191,7 +195,7 @@ Route::prefix('students')->group(function () {
         Route::get('/orderContestParticipants/{contestId}', [ContestsStudentController::class, 'orderContestParticipants']);
 
 //homework//
-       
+
         Route::get('/homework/getHomeWorkWForDivision/{divisionId}', [HomeworkController::class, 'getHomeWorkWForDivision']);
 
 

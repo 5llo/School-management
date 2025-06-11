@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ExamScheduleSchoolResource;
+use App\Http\Resources\WeekScheduleSchoolResource;
 use App\Models\SchoolsClassesDivision;
 use App\Models\Division;
 use App\Models\SchoolsClass;
@@ -22,7 +24,190 @@ class SchoolsClassesDivisionController extends Controller
      * Display a listing of the resource.
      */
     use GeneralTrait;
+    public function storeweekschedule(Request $request)
+    {
 
+        $request->validate([
+            'class_id' => 'required|integer',
+            'division_id' => 'required|integer',
+            'week_schedule' => 'required|array',
+        ]);
+
+        $schoolId = Auth::user()->id;
+        $classId = $request->input('class_id');
+        $divisionId = $request->input('division_id');
+        $weekSchedule = $request->input('week_schedule');
+
+
+        foreach ($weekSchedule as $day => $lessons) {
+            if (!is_array($lessons)) {
+                throw ValidationException::withMessages([
+                    "week_schedule.$day" => "eee"
+                ]);
+            }
+
+            foreach ($lessons as $index => $lesson) {
+                $validator = Validator::make($lesson, [
+                    'subject' => 'required|string',
+                    'date' => 'required|date',
+                    'time' => 'required|string',
+                ]);
+
+                if ($validator->fails()) {
+                    throw ValidationException::withMessages([
+                        "week_schedule.$day.$index" => $validator->errors()->all()
+                    ]);
+                }
+            }
+        }
+
+
+        $schoolClass = SchoolsClass::where('school_id', $schoolId)
+            ->where('class_id', $classId)
+            ->first();
+
+        if (!$schoolClass) {
+            return response()->json(['error' => 'School class not found'], 404);
+        }
+
+        $schoolClassId = $schoolClass->id;
+
+        $schoolClassDivision = SchoolsClassesDivision::where('school_class_id', $schoolClassId)
+            ->where('division_id', $divisionId)
+            ->first();
+
+        if (!$schoolClassDivision) {
+            return response()->json(['error' => 'School class division not found'], 404);
+        }
+
+
+        $schoolClassDivision->week_schedule = json_encode($weekSchedule, JSON_UNESCAPED_UNICODE);
+        $schoolClassDivision->save();
+
+        return response()->json([
+            'message' => 'Week schedule updated successfully',
+            'week_schedule' => $weekSchedule,
+        ]);
+    }  public function getweekpagedetalisforschool(Request $request){
+      $schoolId = Auth::user()->id;
+      $classId = $request->input('class_id');
+      $divisonId = $request->input('division_id');
+
+      $schoolClass = SchoolsClass::where('school_id', $schoolId)
+          ->where('class_id', $classId)
+          ->first();
+
+      if (!$schoolClass) {
+          return response()->json(['error' => 'School class not found'], 404);
+      }
+
+      $schoolClassId = $schoolClass->id;
+
+
+      $schoolClassDivision = SchoolsClassesDivision::with(['teachers', 'students'])
+          ->where('school_class_id', $schoolClassId)
+          ->where('division_id', $divisonId)
+          ->first();
+
+      if (!$schoolClassDivision) {
+          return response()->json(['error' => 'School class division not found'], 404);
+      }
+
+      return $this->successResponse(new WeekScheduleSchoolResource($schoolClassDivision));
+
+  }
+    public function storeExamschedule(Request $request)
+    {
+
+        $request->validate([
+            'class_id' => 'required|integer',
+            'division_id' => 'required|integer',
+            'exam_schedule' => 'required|array',
+        ]);
+
+        $schoolId = Auth::user()->id;
+        $classId = $request->input('class_id');
+        $divisionId = $request->input('division_id');
+        $examSchedule = $request->input('exam_schedule');
+
+
+        foreach ($examSchedule as $day => $lessons) {
+            if (!is_array($lessons)) {
+                throw ValidationException::withMessages([
+                    "week_schedule.$day" => "eee"
+                ]);
+            }
+
+            foreach ($lessons as $index => $lesson) {
+                $validator = Validator::make($lesson, [
+                    'subject' => 'required|string',
+                    'date' => 'required|date',
+                    'time' => 'required|string',
+                ]);
+
+                if ($validator->fails()) {
+                    throw ValidationException::withMessages([
+                        "week_schedule.$day.$index" => $validator->errors()->all()
+                    ]);
+                }
+            }
+        }
+
+
+        $schoolClass = SchoolsClass::where('school_id', $schoolId)
+            ->where('class_id', $classId)
+            ->first();
+
+        if (!$schoolClass) {
+            return response()->json(['error' => 'School class not found'], 404);
+        }
+
+        $schoolClassId = $schoolClass->id;
+
+        $schoolClassDivision = SchoolsClassesDivision::where('school_class_id', $schoolClassId)
+            ->where('division_id', $divisionId)
+            ->first();
+
+        if (!$schoolClassDivision) {
+            return response()->json(['error' => 'School class division not found'], 404);
+        }
+
+
+        $schoolClassDivision->exam_schedule = json_encode($examSchedule, JSON_UNESCAPED_UNICODE);
+        $schoolClassDivision->save();
+
+        return response()->json([
+            'message' => 'Week schedule updated successfully',
+            'exam_schedule' => $examSchedule,
+        ]);
+    }  public function getExampagedetalisforschool(Request $request){
+    $schoolId = Auth::user()->id;
+    $classId = $request->input('class_id');
+    $divisonId = $request->input('division_id');
+
+    $schoolClass = SchoolsClass::where('school_id', $schoolId)
+        ->where('class_id', $classId)
+        ->first();
+
+    if (!$schoolClass) {
+        return response()->json(['error' => 'School class not found'], 404);
+    }
+
+    $schoolClassId = $schoolClass->id;
+
+
+    $schoolClassDivision = SchoolsClassesDivision::with(['teachers', 'students'])
+        ->where('school_class_id', $schoolClassId)
+        ->where('division_id', $divisonId)
+        ->first();
+
+    if (!$schoolClassDivision) {
+        return response()->json(['error' => 'School class division not found'], 404);
+    }
+
+    return $this->successResponse(new ExamScheduleSchoolResource($schoolClassDivision));
+
+}
     public function getWeek_Schedule(Request $request)
 {
     try {
@@ -66,7 +251,7 @@ public function getTopFeaturedStudents(Request $request)
         ->whereHas('student', function ($query) use ($teacher) {
             $query->whereHas('schoolClassDivision', function ($q) use ($teacher) {
 
-                $q->where('id', $teacher->division->id); 
+                $q->where('id', $teacher->division->id);
 
             });
         })->whereHas('session', function ($query) {
@@ -74,7 +259,7 @@ public function getTopFeaturedStudents(Request $request)
         })->orderByRaw('MAX(oral_grade) desc')
         ->groupBy('student_id') // تجنب تكرار نفس الطالب
 
-        ->take(5) 
+        ->take(5)
 
         ->get();
 
@@ -156,8 +341,8 @@ public function getTopFeaturedStudents(Request $request)
                 'message' => 'Validation Error',
                 'errors' => $validator->errors()
 
-            ], 422); 
-        }  
+            ], 422);
+        }
 
          $data = $request->all();
      $school = Auth::user()->id;
