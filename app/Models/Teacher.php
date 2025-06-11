@@ -17,7 +17,8 @@ class Teacher extends Model
         'gender',
         'email',
         'password',
-        'name'
+        'name',
+        'fcmtoken'
     ];
 
     public function school()
