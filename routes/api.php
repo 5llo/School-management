@@ -29,22 +29,9 @@ use App\Http\Controllers\SchoolsClassesDivisionActivityController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\Authentication;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\notification\firebaseController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,7 +84,7 @@ Route::post('/acceptOrRejectRequestFoodMeal', [StudentsFoodMealController::class
 
  Route::get('/teacher/homeworks', [HomeworkController::class, 'index']);
  Route::post('/homeworks', [HomeworkController::class,'store']);
-   
+
 
 
 
@@ -111,6 +98,7 @@ Route::post('/register', [Authentication::class, 'register']);
     
 
 
+Route::post('/login/google', [Authentication::class, 'googleLogin']);
 
 
 
@@ -191,7 +179,7 @@ Route::prefix('students')->group(function () {
         Route::get('/orderContestParticipants/{contestId}', [ContestsStudentController::class, 'orderContestParticipants']);
 
 //homework//
-       
+
         Route::get('/homework/getHomeWorkWForDivision/{divisionId}', [HomeworkController::class, 'getHomeWorkWForDivision']);
 
 
@@ -324,3 +312,11 @@ Route::prefix('conversation')->group(function () {
 
 
 });
+
+
+//////dont come close////////////
+
+Route::post('/send-fcm-to-teacher', [ChatController::class, 'sendFcmToTeacher']);
+Route::post('/send-fcm-to-parent', [ChatController::class, 'sendFcmToParent']);
+
+

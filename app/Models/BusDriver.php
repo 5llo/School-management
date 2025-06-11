@@ -19,6 +19,7 @@ class BusDriver extends Model
         'longitude',
         'phone',
         'bus_capacity',
+        'fcmtoken'
     ];
 
     public function school()

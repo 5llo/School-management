@@ -3,10 +3,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Laravel\Sanctum\HasApiTokens;
 class ParentModel extends Model
 {
-    use HasFactory;
+    use HasFactory,HasApiTokens;
 
     // Specify the table name if it doesn't follow Laravel's naming convention
     protected $table = 'parents';
@@ -18,7 +18,8 @@ class ParentModel extends Model
         'password',
         'latitude',
         'longitude',
-        'phone'
+        'phone',
+        'fcmtoken'
     ];
 
     public function students()

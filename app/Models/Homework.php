@@ -13,7 +13,11 @@ class Homework extends Model
         'teacher_id',
         'description',
         'file',
-        
+
+    ];
+
+    protected $hidden =[
+"teacher_id","updated_at"
     ];
 
     public function schoolClassDivision()
