@@ -29,22 +29,9 @@ use App\Http\Controllers\SchoolsClassesDivisionActivityController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\Authentication;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\notification\firebaseController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +86,7 @@ Route::post('/acceptOrRejectRequestFoodMeal', [StudentsFoodMealController::class
  Route::post('/homeworks', [HomeworkController::class,'store']);
  Route::post('/getweekpagedetalisforschool', [SchoolsClassesDivisionController::class,'getweekpagedetalisforschool']);
 
+
  Route::post('/storeweekschedule', [SchoolsClassesDivisionController::class,'storeweekschedule']);
 
     Route::post('/getExampagedetalisforschool', [SchoolsClassesDivisionController::class,'getExampagedetalisforschool']);
@@ -115,6 +103,7 @@ Route::post('/register', [Authentication::class, 'register']);
 
 
 
+Route::post('/login/google', [Authentication::class, 'googleLogin']);
 
 
 
@@ -328,3 +317,11 @@ Route::prefix('conversation')->group(function () {
 
 
 });
+
+
+//////dont come close////////////
+
+Route::post('/send-fcm-to-teacher', [ChatController::class, 'sendFcmToTeacher']);
+Route::post('/send-fcm-to-parent', [ChatController::class, 'sendFcmToParent']);
+
+
