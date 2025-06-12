@@ -126,7 +126,8 @@ class Authentication extends Controller
             try {
                 $validator = Validator::make($request->all(), [
                     'email' => 'required|email|max:30',
-                    'password' => 'required|string|max:18|min:4',
+                    'password' => 'required|string|max:16|min:4',
+
                 ]);
 
                 if ($validator->fails()) {
